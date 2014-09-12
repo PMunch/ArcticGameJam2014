@@ -11,9 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.SizeToAction;
 
+<<<<<<< HEAD
 public class TestActor extends Actor {
 	Texture texture = new Texture(Gdx.files.internal("logo.png"));
 	Texture bgTexture = new Texture(Gdx.files.internal("menu-bg-tile.png"));
+=======
+public class TestActor extends GameObject {
+	Texture texture = new Texture(Gdx.files.internal("badlogic.jpg"));
+>>>>>>> FETCH_HEAD
 	//TextureAtlas textureAtlas = new TextureAtlas(Gdx.files.internal("data/spritesheet.atlas"));
     //Animation animation = new Animation(1/15f, textureAtlas.getRegions());
     
@@ -33,8 +38,12 @@ public class TestActor extends Actor {
     }
     @Override
     public void act(float delta){
+<<<<<<< HEAD
     	bgPos+=3;
     	
     	bgPos = bgPos % bgTexture.getHeight();
+=======
+    	super.act(delta);
+>>>>>>> FETCH_HEAD
     }
 }
