@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class TestActor extends Actor {
+public class TestActor extends GameObject {
 	Texture texture = new Texture(Gdx.files.internal("badlogic.jpg"));
 	//TextureAtlas textureAtlas = new TextureAtlas(Gdx.files.internal("data/spritesheet.atlas"));
     //Animation animation = new Animation(1/15f, textureAtlas.getRegions());
@@ -17,6 +17,6 @@ public class TestActor extends Actor {
     }
     @Override
     public void act(float delta){
-    	
+    	super.act(delta);
     }
 }
