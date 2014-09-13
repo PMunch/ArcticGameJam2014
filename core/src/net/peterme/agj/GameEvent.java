@@ -6,7 +6,8 @@ public class GameEvent extends Event{
 	public enum Type {
 		CREATED,
 		ACT,
-		KIMEVENT
+		KIMEVENT,
+		STARTGAME
 	}
 	public Type type;
 	public Object payload;
