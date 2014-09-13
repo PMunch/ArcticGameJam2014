@@ -14,7 +14,7 @@ public class GameObject extends Actor {
 	public Animation animation;
 	public int x;
 	public int y;
-	private int elapsedTime;
+	public float elapsedTime;
 	
 	public GameObject(){
 		
@@ -38,8 +38,10 @@ public class GameObject extends Actor {
         //batch.draw(texture.region, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
 		if(texture != null)
 			batch.draw(texture,x,y,texture.getWidth(),texture.getHeight());
-		if(textureAtlas != null)
+		if(animation != null){
 			batch.draw(animation.getKeyFrame(elapsedTime),x,y);
+			//Gdx.app.log("Animation", "ElapsedTime: "+elapsedTime);
+		}
     }
     @Override
     public void act(float delta){
@@ -68,7 +70,7 @@ public class GameObject extends Actor {
     	else
     		return 0;
     }
-    public boolean touched(int screenX, int screenY){
+    /*public boolean touched(int screenX, int screenY){
     	int tapX;
     	int tapY;
     	tapX=(int) (screenX/(getStage().getViewport().getScreenWidth()/getStage().getViewport().getWorldWidth()));
@@ -78,7 +80,7 @@ public class GameObject extends Actor {
 			return true;
 		}
     	return false;
-    }
+    }*/
     public void setBounds(){
 		setBounds(x, y, getWidth(), getHeight());
     }

@@ -11,7 +11,7 @@ public class ArcticGameJam extends Game {
 	
 	@Override
 	public void create () {
-		currentScene = new IntroScene();
+		currentScene = new GameScene();
 		Gdx.input.setInputProcessor(currentScene.stage);
 		currentScene.addListener(new GameEventListener(){
 			@Override
