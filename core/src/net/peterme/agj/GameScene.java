@@ -38,10 +38,12 @@ public class GameScene extends Scene {
 		manBearPig.x=1092;
 		manBearPig.y=200;
 		addActor(manBearPig);
-		obst = new Obstacle("gate.png", MorphMode.MAN, manBearPig);
+		obst = new Obstacle("skog.png", MorphMode.BEAR, manBearPig);
 		obst.x=-280;
 		obst.y=90;
 		addActor(obst);
+		Pickup pickup = new Pickup("pickup1.png", MorphMode.MAN, manBearPig, world, -600, 150);
+		addActor(pickup);
 		stage.addListener(new InputListener(){
 			@Override
 			public boolean keyDown(InputEvent event, int keyCode){
@@ -72,6 +74,7 @@ public class GameScene extends Scene {
 		super.render(delta);
 		if(manBearPig.isAlive){
 	        world.step( delta, 8, 3 );
+	        //debugRenderer.render(world, debugMatrix);
 			obst.step();
 			bg.step();
 			ground.step();

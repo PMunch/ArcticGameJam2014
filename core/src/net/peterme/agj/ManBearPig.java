@@ -1,5 +1,7 @@
 package net.peterme.agj;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -37,13 +39,16 @@ public class ManBearPig extends GameObject {
 	public Scene scene;
 	public boolean isAlive = true;
 	private Action action;
+	private Random rand;
 	private Texture particleTexture;
 	private Particle[] particles;
 	private class Particle{
-		int x;
-		int y;
+		float x;
+		float y;
 		Texture texture;
 		float life = 0f;
+		float scale;
+		float alpha;
 	}
 	public enum MorphMode {
 		MAN,
@@ -54,6 +59,7 @@ public class ManBearPig extends GameObject {
 		super();
 		rumble = new Rumble();
 		this.scene = scene;
+		rand = new Random();
 		particleTexture = loadImage("partikkel1.png");
 		particles = new Particle[15];
 		Texture texture = loadImage(image);
@@ -106,6 +112,7 @@ public class ManBearPig extends GameObject {
 
      		// Create our fixture and attach it to the body
      		Fixture fixture = body.createFixture(fixtureDef);
+     		fixture.setUserData("player");
 
      		// Remember to dispose of any shapes after you're done with them!
      		// BodyDef and FixtureDef don't need disposing, but shapes do.
@@ -132,7 +139,23 @@ public class ManBearPig extends GameObject {
 
 				@Override
 				public void preSolve(Contact contact, Manifold oldManifold) {
-
+					WorldManifold manifold = contact.getWorldManifold();
+			    	  for(int j = 0; j < manifold.getNumberOfContactPoints(); j++){
+			    		  if(contact.getFixtureA().getUserData() != null &&contact.getFixtureA().getUserData() instanceof Pickup){
+			    			 Pickup pickup = ((Pickup) contact.getFixtureA().getUserData());
+			    			 if(pickup.openMode==mode)
+			    				 pickup.dead=true;
+			    			 else
+			    				 contact.setEnabled(false);
+			    		  }
+			    		  if(contact.getFixtureB().getUserData() != null &&contact.getFixtureB().getUserData() instanceof Pickup){
+			    			  Pickup pickup = ((Pickup) contact.getFixtureB().getUserData());
+			    			  if(pickup.openMode==mode)
+			    				  pickup.dead=true;
+			    			  else
+			    				  contact.setEnabled(false);
+			    		  }
+			    	  }
 				}
 
 				@Override
@@ -179,12 +202,33 @@ public class ManBearPig extends GameObject {
 		if (rumble.time  > 0){
 			rumble.tick(delta);
 		}
-		
+		/*for(int i=0;i<15;i++){
+			if(particles[i]==null){
+				if(rand.nextInt(100)>80){
+					particles[i]= new Particle();
+					particles[i].life=1f;
+					particles[i].texture=particleTexture;
+					particles[i].x=x+45;
+					particles[i].y=y;
+				}
+			}else{
+				particles[i].life-=0.03;
+				particles[i].x+=4;
+				particles[i].y+=rand.nextFloat();
+				if(particles[i].life<0f){
+					particles[i]=null;
+				}
+			}
+		}*/
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
 		if(drawnByObstacle==0)
 			super.draw(batch,alpha);
+		/*for(Particle part: particles){
+			if(part!=null)
+				batch.draw(part.texture,part.x,part.y,part.texture.getHeight(),part.texture.getWidth(),part.scale,part.scale);
+		}*/
 	}
 	public void die(){
 		isAlive=false;
