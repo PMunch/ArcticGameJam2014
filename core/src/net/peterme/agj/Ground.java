@@ -43,6 +43,9 @@ public class Ground extends GameObject {
 			ground.remove(ground.size()-1);
 			ground.add(0, getNewHeight());
 		}
+		if(dead){
+			underGround.dispose();
+		}
 	}
 	private int getNewHeight(){
 		if(rand.nextInt(100)<20){

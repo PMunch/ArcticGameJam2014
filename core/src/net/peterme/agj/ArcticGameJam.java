@@ -14,7 +14,10 @@ public class ArcticGameJam extends Game {
 		currentScene.addListener(new GameEventListener(){
 			@Override
 			public boolean onStartGame(GameEvent event){
-				setScreen(new GameScene());
+				currentScene.dispose();
+				currentScene = new GameScene();
+				setScreen(currentScene);
+				Gdx.input.setInputProcessor(currentScene);
 				return true;
 			}
 		});

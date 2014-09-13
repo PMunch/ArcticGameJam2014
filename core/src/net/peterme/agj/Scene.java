@@ -1,24 +1,29 @@
 package net.peterme.agj;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Scene extends Group implements Screen {
+public class Scene /*extends Group*/ implements Screen,InputProcessor {
 	public Stage stage;
 	public Camera camera;
 	public Viewport viewport;
+	public Group sceneGroup;
 	
 	public Scene(){
 		camera = new OrthographicCamera();
 	    viewport = new FitViewport(1280, 720, camera);
 		stage = new Stage(viewport);
-		stage.addActor(this);
+		sceneGroup = new Group();
+		stage.addActor(sceneGroup);
 	}
 
 	@Override
@@ -56,12 +61,83 @@ public class Scene extends Group implements Screen {
 		// TODO Auto-generated method stub
 		
 	}
+/*
+	public void dispose() {
+		stage.dispose();
+		for(Actor child:getChildren()){
+			((GameObject)child).dead=true;
+		}
+		//this.clear();
+		//this.dispose();
+	}
+*/
 
 	@Override
 	public void dispose() {
+		for(Actor child:sceneGroup.getChildren()){
+			((GameObject)child).dead=true;
+		}
 		stage.dispose();
-		this.clear();
-		this.dispose();
+	}
+	
+	public void addActor(GameObject actor){
+		sceneGroup.addActor(actor);
+	}
+	public Stage getStage(){
+		return stage;
+	}
+	public void fire(Event event){
+		sceneGroup.fire(event);
+	}
+	public void addListener(GameEventListener gameEventListener){
+		sceneGroup.addListener(gameEventListener);
 	}
 
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
