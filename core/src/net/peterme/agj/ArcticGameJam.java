@@ -18,15 +18,17 @@ public class ArcticGameJam extends ApplicationAdapter {
 	private Actor image;
 	private Stage stage;
 	private Viewport viewport;
-	private Camera camera;
+	private OrthographicCamera camera;
 	
 	@Override
 	public void create () {
-		image = new TestActor();
+		
 		//image
 		camera = new OrthographicCamera();
 	    viewport = new FitViewport(1280, 720, camera);
 		stage = new Stage(viewport);
+		Gdx.input.setInputProcessor(stage);
+		image = new TestActor( camera );
 		stage.addListener(new GameEventListener(){
 			@Override
 			public boolean onKimEvent(String type){
