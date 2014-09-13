@@ -15,6 +15,10 @@ public class GameObject extends Actor {
 	public int x;
 	public int y;
 	private int elapsedTime;
+	
+	public GameObject(){
+		
+	}
 	public GameObject(String image){
 		texture = new Texture(Gdx.files.internal(image));
 	}
