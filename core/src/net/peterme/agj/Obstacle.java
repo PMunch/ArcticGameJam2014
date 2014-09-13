@@ -28,19 +28,25 @@ public class Obstacle extends GameObject {
 	public void draw(Batch batch,float alpha){
 		if(player.mode==openMode){
 			batch.draw(obstacleParts[3], x+140, y);
-			if(player.drawnByObstacle==playerDraw)
+			if(player.drawnByObstacle==1)
 				batch.draw(player.animation.getKeyFrame(player.elapsedTime),player.x,player.y);
 			batch.draw(obstacleParts[2], x, y);
 		}else{
 			batch.draw(obstacleParts[1], x+140, y);
-			if(player.drawnByObstacle==playerDraw)
+			if(player.drawnByObstacle==1){
 				batch.draw(player.animation.getKeyFrame(player.elapsedTime),player.x,player.y);
+				if(player.x<=x+140 && player.x>=x){
+					player.die();
+				}
+			}
 			batch.draw(obstacleParts[0], x, y);
 		}
-		x+=4;
 		if(x>1280){
 			player.drawnByObstacle--;
 			dead=true;
 		}
+	}
+	public void step(){
+		x+=4;
 	}
 }

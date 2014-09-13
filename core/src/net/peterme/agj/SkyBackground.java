@@ -49,11 +49,6 @@ public class SkyBackground extends GameObject {
 			Texture tex = textures[bgImage.texture];
 			TextureRegion reg = new TextureRegion(tex);
 			batch.draw(reg, bgImage.x, 0f, 0, 0, tex.getWidth(), tex.getHeight(), 1f/bgImage.depth, 1f/bgImage.depth,1);
-			bgImage.x+=bgImage.depth;
-			if(bgImage.x>1280){
-				bgImages.remove(i);
-				addNewBgImage();
-			}
 		}
 	}
 	private void addNewBgImage(){
@@ -71,5 +66,15 @@ public class SkyBackground extends GameObject {
 			}
 		}
 		bgImages.add(j<bgImages.size()?j:bgImages.size(),bgImage);
+	}
+	public void step(){
+		for(int i=0;i<bgImages.size();i++){
+			BgImage bgImage = bgImages.get(i);
+			bgImage.x+=bgImage.depth;
+			if(bgImage.x>1280){
+				bgImages.remove(i);
+				addNewBgImage();
+			}
+		}
 	}
 }

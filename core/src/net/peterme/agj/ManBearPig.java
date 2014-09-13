@@ -19,10 +19,14 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
+import com.badlogic.gdx.scenes.scene2d.Action;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
+
 
 public class ManBearPig extends GameObject {
 	//private Animation walkAnimation;
-	private boolean grounded = true;
+	private boolean grounded = false;
 	private Body body;
 	private Animation manimation;
 	private Animation bearimation;
@@ -31,6 +35,16 @@ public class ManBearPig extends GameObject {
 	public MorphMode mode;
 	private Rumble rumble;
 	public Scene scene;
+	public boolean isAlive = true;
+	private Action action;
+	private Texture particleTexture;
+	private Particle[] particles;
+	private class Particle{
+		int x;
+		int y;
+		Texture texture;
+		float life = 0f;
+	}
 	public enum MorphMode {
 		MAN,
 		BEAR,
@@ -40,6 +54,8 @@ public class ManBearPig extends GameObject {
 		super();
 		rumble = new Rumble();
 		this.scene = scene;
+		particleTexture = loadImage("partikkel1.png");
+		particles = new Particle[15];
 		Texture texture = loadImage(image);
 		TextureRegion[][] tmp = TextureRegion.split(texture, 90, 90);              // #10
         TextureRegion[] manFrames = new TextureRegion[4];
@@ -72,7 +88,7 @@ public class ManBearPig extends GameObject {
      		bodyDef.type = BodyType.DynamicBody;
      		// Set our body's starting position in the world
      		//bodyDef.position.set(1137, 135);
-     		bodyDef.position.set(1137/100f, 135/100f);
+     		bodyDef.position.set(1137/100f, 200/100f);
 
      		// Create our body in the world using our body definition
      		body = world.createBody(bodyDef);
@@ -130,7 +146,7 @@ public class ManBearPig extends GameObject {
 	public void jump(){
 		if(grounded){
 			grounded=false;
-			body.applyForce(new Vector2(0,150), body.getPosition(), true);
+			body.applyForce(new Vector2(0,180), body.getPosition(), true);
 		}
 	}
 	public void morph(){
@@ -154,14 +170,23 @@ public class ManBearPig extends GameObject {
 	public void act(float delta){
 		super.act(delta);
 		//x=(int) (body.getPosition().x*100f-45);
-		y=(int) (body.getPosition().y*100f-45);
+		if(action!=null){
+			//action.act(delta);
+			action.act(delta);
+		}else{
+			y=(int) (body.getPosition().y*100f-45);
+		}
 		if (rumble.time  > 0){
 			rumble.tick(delta);
 		}
+		
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
 		if(drawnByObstacle==0)
 			super.draw(batch,alpha);
+	}
+	public void die(){
+		isAlive=false;
 	}
 }

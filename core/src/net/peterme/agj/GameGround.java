@@ -70,9 +70,12 @@ public class GameGround extends GameObject {
 			}
 		}
 	}
-	@Override
+	/*@Override
 	public void act(float delta){
 		super.act(delta);
+		
+	}*/
+	public void step(){
 		groundOffset-=groundSpeed;
 		if(groundOffset<0){
 			groundOffset+=1;

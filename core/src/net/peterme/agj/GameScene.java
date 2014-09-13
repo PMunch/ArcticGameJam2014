@@ -18,22 +18,27 @@ public class GameScene extends Scene {
 	private World world;
 	private Box2DDebugRenderer debugRenderer;
 	private Matrix4 debugMatrix;
+	private SkyBackground bg;
+	private GameGround ground;
+	private Obstacle obst;
 	public GameScene() {
 		super();
 		//addActor(new Ground("tile.png"));
-		world = new World(new Vector2(0, -10), true); 
+		world = new World(new Vector2(0, -17), true); 
 		debugRenderer = new Box2DDebugRenderer();
 	    //debugMatrix=camera.combined.cpy();//new Matrix4(camera.combined);
 	    //debugMatrix.scale(1/1000000f, 1/1000000f, 1f);
 	    debugMatrix = new OrthographicCamera( 1280/100f, 720/100f ).combined;
 
-		addActor(new SkyBackground("bakgrunn1.png"));
-		addActor(new GameGround("tile1.png",world));
+	    bg = new SkyBackground("bakgrunn1.png");
+		addActor(bg);
+		ground = new GameGround("tile1.png",world);
+		addActor(ground);
 		manBearPig = new ManBearPig("mannbarschwein.png",world,this); 
 		manBearPig.x=1092;
-		manBearPig.y=90;
+		manBearPig.y=200;
 		addActor(manBearPig);
-		Obstacle obst = new Obstacle("gate.png", MorphMode.MAN, manBearPig);
+		obst = new Obstacle("gate.png", MorphMode.MAN, manBearPig);
 		obst.x=-280;
 		obst.y=90;
 		addActor(obst);
@@ -65,8 +70,11 @@ public class GameScene extends Scene {
 	@Override
 	public void render(float delta){
 		super.render(delta);
-        //world.step(delta, 6, 2);
-        world.step( 1/45.0f, 8, 3 );
-		//debugRenderer.render(world, debugMatrix);
+		if(manBearPig.isAlive){
+	        world.step( delta, 8, 3 );
+			obst.step();
+			bg.step();
+			ground.step();
+		}
 	}
 }
