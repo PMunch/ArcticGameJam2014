@@ -54,7 +54,17 @@ public class TestActor extends Actor {
     public void act(float delta){
     	super.act(delta);
     	bgPos+=3;
+    	//if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+    		currentBGScale+=currentBGScaleDirection;
     	
+	    	if(currentBGScale > 2) {
+	    		currentBGScale = 2;
+	    		currentBGScaleDirection = -currentBGScaleDirection;
+	    	} else if(currentBGScale <1 ) { 
+	    		currentBGScale = 1;
+	    		currentBGScaleDirection = -currentBGScaleDirection;
+	    	}
+    //	}
     	bgPos = bgPos % bgTexture.getHeight();
     }
 }
