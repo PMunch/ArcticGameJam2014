@@ -18,7 +18,9 @@ public class GameEventListener implements EventListener{
 		case KIMEVENT:
 			return onKimEvent((String) event.payload);
 		case STARTGAME:
-			return onStartGame(event);		
+			return onStartGame(event);
+		case RESTART:
+			return onRestartGame(event);
 		}
 		return true;
 	}
@@ -31,6 +33,9 @@ public class GameEventListener implements EventListener{
 		return false;
 	}
 	public boolean onStartGame(GameEvent event){
+		return false;
+	}
+	public boolean onRestartGame(GameEvent event){
 		return false;
 	}
 }

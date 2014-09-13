@@ -5,6 +5,7 @@ import net.peterme.agj.ManBearPig.MorphMode;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -21,6 +22,9 @@ public class GameScene extends Scene {
 	private SkyBackground bg;
 	private GameGround ground;
 	private Obstacle obst;
+	private Pickup pickup;
+	//private ParticleSystem partSystem;
+	//private ParticleEffectActor partSystem;
 	public GameScene() {
 		super();
 		//addActor(new Ground("tile.png"));
@@ -29,7 +33,10 @@ public class GameScene extends Scene {
 	    //debugMatrix=camera.combined.cpy();//new Matrix4(camera.combined);
 	    //debugMatrix.scale(1/1000000f, 1/1000000f, 1f);
 	    debugMatrix = new OrthographicCamera( 1280/100f, 720/100f ).combined;
+	    //ParticleEffect bombEffect = new ParticleEffect();
+		//bombEffect.load(Gdx.files.internal("particle1.p"), Gdx.files.internal("."));
 
+	    //partSystem = new ParticleEffectActor(bombEffect);
 	    bg = new SkyBackground("bakgrunn1.png");
 		addActor(bg);
 		ground = new GameGround("tile1.png",world);
@@ -37,12 +44,13 @@ public class GameScene extends Scene {
 		manBearPig = new ManBearPig("mannbarschwein.png",world,this); 
 		manBearPig.x=1092;
 		manBearPig.y=200;
-		addActor(manBearPig);
+
+		//stage.addActor(partSystem);
 		obst = new Obstacle("skog.png", MorphMode.BEAR, manBearPig);
 		obst.x=-280;
 		obst.y=90;
 		addActor(obst);
-		Pickup pickup = new Pickup("pickup1.png", MorphMode.MAN, manBearPig, world, -600, 150);
+		pickup = new Pickup("pickup1.png", MorphMode.MAN, manBearPig, world, -600, 150);
 		addActor(pickup);
 		stage.addListener(new InputListener(){
 			@Override
@@ -68,6 +76,17 @@ public class GameScene extends Scene {
 				return false;
 			}
 		});
+		/*stage.addListener(new GameEventListener(){
+			@Override
+			public boolean onKimEvent(String ev){
+				if(ev.equals("explode")){
+					//partSystem.explode(manBearPig.x+45, manBearPig.y+45);
+				}
+				return true;
+			}
+		});*/
+
+		addActor(manBearPig);
 	}
 	@Override
 	public void render(float delta){
@@ -78,6 +97,7 @@ public class GameScene extends Scene {
 			obst.step();
 			bg.step();
 			ground.step();
+			pickup.step();
 		}
 	}
 }

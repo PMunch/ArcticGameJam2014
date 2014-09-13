@@ -7,7 +7,8 @@ public class GameEvent extends Event{
 		CREATED,
 		ACT,
 		KIMEVENT,
-		STARTGAME
+		STARTGAME,
+		RESTART
 	}
 	public Type type;
 	public Object payload;

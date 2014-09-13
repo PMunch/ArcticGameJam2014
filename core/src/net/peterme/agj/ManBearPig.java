@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -22,6 +23,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
@@ -39,17 +42,18 @@ public class ManBearPig extends GameObject {
 	public Scene scene;
 	public boolean isAlive = true;
 	private Action action;
-	private Random rand;
-	private Texture particleTexture;
-	private Particle[] particles;
-	private class Particle{
+	private ParticleEffect bombEffect;
+	//private Random rand;
+	//private Texture particleTexture;
+	//private Particle[] particles;
+	/*private class Particle{
 		float x;
 		float y;
 		Texture texture;
 		float life = 0f;
 		float scale;
 		float alpha;
-	}
+	}*/
 	public enum MorphMode {
 		MAN,
 		BEAR,
@@ -59,9 +63,11 @@ public class ManBearPig extends GameObject {
 		super();
 		rumble = new Rumble();
 		this.scene = scene;
-		rand = new Random();
-		particleTexture = loadImage("partikkel1.png");
-		particles = new Particle[15];
+		//rand = new Random();
+		//particleTexture = loadImage("partikkel1.png");
+		//particles = new Particle[15];
+		bombEffect = new ParticleEffect();
+		bombEffect.load(Gdx.files.internal("particle1.p"), Gdx.files.internal("."));
 		Texture texture = loadImage(image);
 		TextureRegion[][] tmp = TextureRegion.split(texture, 90, 90);              // #10
         TextureRegion[] manFrames = new TextureRegion[4];
@@ -202,6 +208,7 @@ public class ManBearPig extends GameObject {
 		if (rumble.time  > 0){
 			rumble.tick(delta);
 		}
+		bombEffect.update(delta);
 		/*for(int i=0;i<15;i++){
 			if(particles[i]==null){
 				if(rand.nextInt(100)>80){
@@ -223,14 +230,24 @@ public class ManBearPig extends GameObject {
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
+		bombEffect.draw(batch);
 		if(drawnByObstacle==0)
 			super.draw(batch,alpha);
-		/*for(Particle part: particles){
-			if(part!=null)
-				batch.draw(part.texture,part.x,part.y,part.texture.getHeight(),part.texture.getWidth(),part.scale,part.scale);
-		}*/
 	}
 	public void die(){
-		isAlive=false;
+		if(isAlive){
+			isAlive=false;
+			fire(new GameEvent("explode"));
+			bombEffect.reset();
+			bombEffect.start();
+			bombEffect.setPosition(x+45, y+45);
+			Timer.schedule(new Task(){
+                @Override
+                public void run() {
+                    fire(new GameEvent(GameEvent.Type.RESTART));
+                }
+            }
+            ,1);
+		}
 	}
 }

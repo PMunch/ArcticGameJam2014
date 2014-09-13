@@ -69,6 +69,8 @@ public class Pickup extends GameObject {
 			body.setUserData(null);
 			body=null;
 		}
+	}
+	public void step(){
 		x+=4;
 	}
 }
