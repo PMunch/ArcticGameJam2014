@@ -43,6 +43,7 @@ public class ManBearPig extends GameObject {
 	public boolean isAlive = true;
 	private Action action;
 	private ParticleEffect bombEffect;
+	private ParticleEffect[] bombEffects;
 	//private Random rand;
 	//private Texture particleTexture;
 	//private Particle[] particles;
@@ -66,8 +67,15 @@ public class ManBearPig extends GameObject {
 		//rand = new Random();
 		//particleTexture = loadImage("partikkel1.png");
 		//particles = new Particle[15];
-		bombEffect = new ParticleEffect();
-		bombEffect.load(Gdx.files.internal("particle1.p"), Gdx.files.internal("."));
+		//bombEffect = new ParticleEffect();
+		//bombEffect.load(Gdx.files.internal("particle1.p"), Gdx.files.internal(""));
+		bombEffects = new ParticleEffect[3];
+		bombEffects[0] = new ParticleEffect();
+		bombEffects[0].load(Gdx.files.internal("particle1.p"), Gdx.files.internal(""));
+		bombEffects[1] = new ParticleEffect();
+		bombEffects[1].load(Gdx.files.internal("particle2.p"), Gdx.files.internal(""));
+		bombEffects[2] = new ParticleEffect();
+		bombEffects[2].load(Gdx.files.internal("particle3.p"), Gdx.files.internal(""));
 		Texture texture = loadImage(image);
 		TextureRegion[][] tmp = TextureRegion.split(texture, 90, 90);              // #10
         TextureRegion[] manFrames = new TextureRegion[4];
@@ -184,14 +192,17 @@ public class ManBearPig extends GameObject {
 		if(animation==manimation){
 			animation=bearimation;
 			mode=MorphMode.BEAR;
+			explode();
 			return;
 		}else if(animation==bearimation){
 			animation=pigimation;
 			mode=MorphMode.PIG;
+			explode();
 			return;
 		}else if(animation==pigimation){
 			animation=manimation;
 			mode=MorphMode.MAN;
+			explode();
 			return;
 		}
 	}
@@ -208,7 +219,8 @@ public class ManBearPig extends GameObject {
 		if (rumble.time  > 0){
 			rumble.tick(delta);
 		}
-		bombEffect.update(delta);
+		if(bombEffect!=null)
+			bombEffect.update(delta);
 		/*for(int i=0;i<15;i++){
 			if(particles[i]==null){
 				if(rand.nextInt(100)>80){
@@ -230,17 +242,17 @@ public class ManBearPig extends GameObject {
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
-		bombEffect.draw(batch);
-		if(drawnByObstacle==0)
-			super.draw(batch,alpha);
+		if(bombEffect!=null)
+			bombEffect.draw(batch);
+		if(isAlive){
+			if(drawnByObstacle==0)
+				super.draw(batch,alpha);
+		}
 	}
 	public void die(){
 		if(isAlive){
 			isAlive=false;
-			fire(new GameEvent("explode"));
-			bombEffect.reset();
-			bombEffect.start();
-			bombEffect.setPosition(x+45, y+45);
+			explode();
 			Timer.schedule(new Task(){
                 @Override
                 public void run() {
@@ -249,5 +261,21 @@ public class ManBearPig extends GameObject {
             }
             ,1);
 		}
+	}
+	public void explode(){
+		switch(mode){
+		case MAN:
+			bombEffect=bombEffects[0];
+			break;
+		case BEAR:
+			bombEffect=bombEffects[1];
+			break;
+		case PIG:
+			bombEffect=bombEffects[2];
+			break;
+		}
+		bombEffect.reset();
+		bombEffect.start();
+		bombEffect.setPosition(x+45, y+45);
 	}
 }

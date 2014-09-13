@@ -30,7 +30,7 @@ public class Obstacle extends GameObject {
 	public void draw(Batch batch,float alpha){
 		if(player.mode==openMode){
 			batch.draw(obstacleParts[3], x+obstacleParts[0].getRegionWidth(), y);
-			if(player.drawnByObstacle==1){
+			if(player.drawnByObstacle==1 && playerDraw==1 && player.isAlive){
 				batch.draw(player.animation.getKeyFrame(player.elapsedTime),player.x,player.y);
 				if(player.x<=x+obstacleParts[0].getRegionWidth()-40 && player.x>=x && player.y>y+90){
 					player.die();
@@ -39,7 +39,7 @@ public class Obstacle extends GameObject {
 			batch.draw(obstacleParts[2], x, y);
 		}else{
 			batch.draw(obstacleParts[1], x+obstacleParts[0].getRegionWidth(), y);
-			if(player.drawnByObstacle==1){
+			if(player.drawnByObstacle==1 && playerDraw==1 && player.isAlive){
 				batch.draw(player.animation.getKeyFrame(player.elapsedTime),player.x,player.y);
 				if(player.x<=x+obstacleParts[0].getRegionWidth() && player.x>=x){
 					player.die();
