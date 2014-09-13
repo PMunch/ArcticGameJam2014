@@ -21,7 +21,7 @@ public class GameEvent extends Event{
 		this.type = type;
 		this.payload = null;
 	}
-	public GameEvent(Object type){
+	public GameEvent(String type){
 		super();
 		this.type = GameEvent.Type.KIMEVENT;
 		this.payload = type;
