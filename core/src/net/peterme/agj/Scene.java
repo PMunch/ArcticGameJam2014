@@ -8,22 +8,32 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Scene /*extends Group*/ implements Screen,InputProcessor {
+public class Scene /*extends Group*/ implements Screen {
 	public Stage stage;
 	public Camera camera;
 	public Viewport viewport;
-	public Group sceneGroup;
+	//public Group sceneGroup;
 	
 	public Scene(){
 		camera = new OrthographicCamera();
 	    viewport = new FitViewport(1280, 720, camera);
 		stage = new Stage(viewport);
-		sceneGroup = new Group();
-		stage.addActor(sceneGroup);
+		//sceneGroup = new Group();
+		//stage.addActor(sceneGroup);
+		/*sceneGroup.addListener(new InputListener(){
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y,
+	                int pointer, int button){
+				Gdx.app.log("Test","Event: "+event.getTarget());
+				return true;
+			}
+		});*/
 	}
 
 	@Override
@@ -74,25 +84,27 @@ public class Scene /*extends Group*/ implements Screen,InputProcessor {
 
 	@Override
 	public void dispose() {
-		for(Actor child:sceneGroup.getChildren()){
+		/*for(Actor child:stage.getActors()){
 			((GameObject)child).dead=true;
-		}
+		}*/
 		stage.dispose();
 	}
 	
 	public void addActor(GameObject actor){
-		sceneGroup.addActor(actor);
+		//sceneGroup.addActor(actor);
+		stage.addActor(actor);
 	}
 	public Stage getStage(){
 		return stage;
 	}
-	public void fire(Event event){
-		sceneGroup.fire(event);
-	}
+	/*public void fire(Event event){
+		//sceneGroup.fire(event);
+	}*/
 	public void addListener(GameEventListener gameEventListener){
-		sceneGroup.addListener(gameEventListener);
+		//sceneGroup.addListener(gameEventListener);
+		stage.addListener(gameEventListener);
 	}
-
+/*
 	@Override
 	public boolean keyDown(int keycode) {
 		// TODO Auto-generated method stub
@@ -139,5 +151,5 @@ public class Scene /*extends Group*/ implements Screen,InputProcessor {
 	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	}*/
 }

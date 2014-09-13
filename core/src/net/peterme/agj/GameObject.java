@@ -73,9 +73,13 @@ public class GameObject extends Actor {
     	int tapY;
     	tapX=(int) (screenX/(getStage().getViewport().getScreenWidth()/getStage().getViewport().getWorldWidth()));
     	tapY=(int) (screenY/(getStage().getViewport().getScreenHeight()/getStage().getViewport().getWorldHeight()));
+    	//Gdx.app.log("Test", "tx: "+tapX+" ty: "+tapY+" x: "+x+" y: "+y+" h: "+getHeight()+" w: "+getWidth());
     	if(tapX>x && tapX<x+getWidth() && tapY>y && tapY<y+getHeight()){
 			return true;
 		}
     	return false;
+    }
+    public void setBounds(){
+		setBounds(x, y, getWidth(), getHeight());
     }
 }

@@ -7,17 +7,20 @@ import com.badlogic.gdx.graphics.GL20;
 
 public class ArcticGameJam extends Game {
 	private Scene currentScene;
+	private Scene toDestroy;
 	
 	@Override
 	public void create () {
 		currentScene = new IntroScene();
+		Gdx.input.setInputProcessor(currentScene.stage);
 		currentScene.addListener(new GameEventListener(){
 			@Override
 			public boolean onStartGame(GameEvent event){
-				currentScene.dispose();
+				//currentScene.dispose();
+				toDestroy = currentScene;
 				currentScene = new GameScene();
 				setScreen(currentScene);
-				Gdx.input.setInputProcessor(currentScene);
+				Gdx.input.setInputProcessor(currentScene.stage);
 				return true;
 			}
 		});
@@ -29,5 +32,9 @@ public class ArcticGameJam extends Game {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		getScreen().render(Gdx.graphics.getDeltaTime());
+		if(toDestroy!=null){
+			toDestroy.dispose();
+			toDestroy=null;
+		}
 	}
 }
