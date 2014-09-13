@@ -7,27 +7,25 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class ArcticGameJam extends ApplicationAdapter {
-	private Actor image;
 	private Stage stage;
 	private Viewport viewport;
 	private Camera camera;
 	
 	@Override
 	public void create () {
-		image = new TestActor();
+		
 		//image
 		camera = new OrthographicCamera();
 	    viewport = new FitViewport(1280, 720, camera);
 		stage = new Stage(viewport);
-		stage.addListener(new GameEventListener(){
+		/*stage.addListener(new GameEventListener(){
 			@Override
 			public boolean onKimEvent(String type){
 				switch(type){
@@ -37,8 +35,9 @@ public class ArcticGameJam extends ApplicationAdapter {
 				}
 				return true;
 			}
-		});
-		stage.addActor(image);
+		});*/
+		
+		stage.addActor(new TestScene());
 	}
 
 	@Override
