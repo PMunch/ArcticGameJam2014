@@ -23,6 +23,7 @@ public class GameScene extends Scene {
 	public ArrayList<Pickup> pickups;
 	//private Barrier barrier;
 	public int score = 0;
+	private float groundSpeed = 1;
 	//private ParticleSystem partSystem;
 	//private ParticleEffectActor partSystem;
 	public static class Level{

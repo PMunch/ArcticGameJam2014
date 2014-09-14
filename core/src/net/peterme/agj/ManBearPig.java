@@ -190,7 +190,7 @@ public class ManBearPig extends GameObject {
 	public void jump(){
 		if(grounded){
 			grounded=false;
-			ySpd=-15;
+			ySpd=-11;
 			setPosition(getX(),getY()+2);
 		}
 	}
