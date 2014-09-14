@@ -32,8 +32,8 @@ public class Rumble {
     this.time = time;
     this.current_time = 0;
     this.scene = scene;
-    startX = scene.camera.position.x;
-    startY = scene.camera.position.y;
+    startX = 640;//scene.camera.position.x;
+    startY = 360;//scene.camera.position.y;
   }
         
   public void tick(float delta){

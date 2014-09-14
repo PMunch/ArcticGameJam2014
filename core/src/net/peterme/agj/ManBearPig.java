@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -44,6 +45,9 @@ public class ManBearPig extends GameObject {
 	private Action action;
 	private ParticleEffect bombEffect;
 	private ParticleEffect[] bombEffects;
+	private ParticleEffect runEffect;
+	private ParticleEffect[] runEffects;
+	private float bombX;
 	//private Random rand;
 	//private Texture particleTexture;
 	//private Particle[] particles;
@@ -60,7 +64,7 @@ public class ManBearPig extends GameObject {
 		BEAR,
 		PIG
 	};
-	public ManBearPig(String image,World world,Scene scene) {
+	public ManBearPig(String image,World world,final Scene scene) {
 		super();
 		rumble = new Rumble();
 		this.scene = scene;
@@ -69,6 +73,14 @@ public class ManBearPig extends GameObject {
 		//particles = new Particle[15];
 		//bombEffect = new ParticleEffect();
 		//bombEffect.load(Gdx.files.internal("particle1.p"), Gdx.files.internal(""));
+		/*runEffects = new ParticleEffect[3];
+		runEffects[0] = new ParticleEffect();
+		runEffects[0].load(Gdx.files.internal("particleRun1.p"), Gdx.files.internal(""));
+		runEffects[1] = new ParticleEffect();
+		runEffects[1].load(Gdx.files.internal("particleRun2.p"), Gdx.files.internal(""));
+		runEffects[2] = new ParticleEffect();
+		runEffects[2].load(Gdx.files.internal("particleRun3.p"), Gdx.files.internal(""));*/
+		
 		bombEffects = new ParticleEffect[3];
 		bombEffects[0] = new ParticleEffect();
 		bombEffects[0].load(Gdx.files.internal("particle1.p"), Gdx.files.internal(""));
@@ -76,6 +88,12 @@ public class ManBearPig extends GameObject {
 		bombEffects[1].load(Gdx.files.internal("particle2.p"), Gdx.files.internal(""));
 		bombEffects[2] = new ParticleEffect();
 		bombEffects[2].load(Gdx.files.internal("particle3.p"), Gdx.files.internal(""));
+		
+
+		/*runEffect = runEffects[0];
+		runEffect.start();
+		runEffect.setPosition(x+90, y+10);*/
+		
 		Texture texture = loadImage(image);
 		TextureRegion[][] tmp = TextureRegion.split(texture, 90, 90);              // #10
         TextureRegion[] manFrames = new TextureRegion[4];
@@ -108,20 +126,33 @@ public class ManBearPig extends GameObject {
      		bodyDef.type = BodyType.DynamicBody;
      		// Set our body's starting position in the world
      		//bodyDef.position.set(1137, 135);
-     		bodyDef.position.set(1137/100f, 200/100f);
+     		bodyDef.position.set(1132/100f, 200/100f);
+     		bodyDef.fixedRotation=true;
 
      		// Create our body in the world using our body definition
      		body = world.createBody(bodyDef);
 
      		// Create a circle shape and set its radius to 6
      		PolygonShape rect = new PolygonShape();
-     		rect.setAsBox(45/100f, 45/100f);
+     		//rect.setAsBox(40/100f, 40/100f);
+     		Vector2[] vertices ={new Vector2(-0.30f,.4f),
+     				new Vector2(-0.4f,0.30f),
+     				new Vector2(-0.4f,-0.30f),
+     				new Vector2(-0.30f,-0.4f),
+     				new Vector2(0.30f,-0.4f),
+     				new Vector2(0.4f,-0.30f),
+     				new Vector2(0.4f,0.30f),
+     				new Vector2(0.30f,0.4f)};
+     		rect.set(vertices);
+     		//rect.setRadius(40/100f);
+     		//CircleShape circ = new CircleShape();
+     		//circ.setRadius(40/100f);
 
      		// Create a fixture definition to apply our shape to
      		FixtureDef fixtureDef = new FixtureDef();
      		fixtureDef.shape = rect;
      		fixtureDef.density = 0.5f; 
-     		fixtureDef.friction = 0.1f;
+     		fixtureDef.friction = 0f;
      		fixtureDef.restitution = 0;//.6f; // Make it bounce a little bit
 
      		// Create our fixture and attach it to the body
@@ -130,6 +161,7 @@ public class ManBearPig extends GameObject {
 
      		// Remember to dispose of any shapes after you're done with them!
      		// BodyDef and FixtureDef don't need disposing, but shapes do.
+     		//circ.dispose();
      		rect.dispose();
      		
      		world.setContactListener(new ContactListener(){
@@ -157,17 +189,21 @@ public class ManBearPig extends GameObject {
 			    	  for(int j = 0; j < manifold.getNumberOfContactPoints(); j++){
 			    		  if(contact.getFixtureA().getUserData() != null &&contact.getFixtureA().getUserData() instanceof Pickup){
 			    			 Pickup pickup = ((Pickup) contact.getFixtureA().getUserData());
-			    			 if(pickup.openMode==mode)
+			    			 if(pickup.openMode==mode){
 			    				 pickup.dead=true;
-			    			 else
-			    				 contact.setEnabled(false);
+			    				 ((GameScene) scene).score+=1000;
+			    				 scene.addActor(new ScoreIndicator("+1000",pickup.x,pickup.y));
+			    			 }
+			    			 contact.setEnabled(false);
 			    		  }
 			    		  if(contact.getFixtureB().getUserData() != null &&contact.getFixtureB().getUserData() instanceof Pickup){
 			    			  Pickup pickup = ((Pickup) contact.getFixtureB().getUserData());
-			    			  if(pickup.openMode==mode)
+			    			  if(pickup.openMode==mode){
 			    				  pickup.dead=true;
-			    			  else
-			    				  contact.setEnabled(false);
+			    				 scene.addActor(new ScoreIndicator("+1000",pickup.x,pickup.y));
+			    				 ((GameScene) scene).score+=1000;
+			    			  }
+			    			  contact.setEnabled(false);
 			    		  }
 			    	  }
 				}
@@ -209,6 +245,10 @@ public class ManBearPig extends GameObject {
 	@Override
 	public void act(float delta){
 		super.act(delta);
+		/*Gdx.app.log("Test", body.getPosition().x+"");
+		if(body.getPosition().x>12){
+			  die();
+		}*/
 		//x=(int) (body.getPosition().x*100f-45);
 		if(action!=null){
 			//action.act(delta);
@@ -219,8 +259,16 @@ public class ManBearPig extends GameObject {
 		if (rumble.time  > 0){
 			rumble.tick(delta);
 		}
-		if(bombEffect!=null)
+		if(bombEffect!=null){
+			bombEffect.setPosition(x+45+bombX, y+45);
 			bombEffect.update(delta);
+			bombX+=6;
+		}
+		/*if(runEffect!=null){
+			runEffect.update(delta);
+			runEffect.start();
+			runEffect.setPosition(x+90, y+10);
+		}*/
 		/*for(int i=0;i<15;i++){
 			if(particles[i]==null){
 				if(rand.nextInt(100)>80){
@@ -244,6 +292,8 @@ public class ManBearPig extends GameObject {
 	public void draw(Batch batch,float alpha){
 		if(bombEffect!=null)
 			bombEffect.draw(batch);
+		if(runEffect!=null)
+			runEffect.draw(batch);
 		if(isAlive){
 			if(drawnByObstacle==0)
 				super.draw(batch,alpha);
@@ -266,16 +316,24 @@ public class ManBearPig extends GameObject {
 		switch(mode){
 		case MAN:
 			bombEffect=bombEffects[0];
+			//runEffect=runEffects[0];
 			break;
 		case BEAR:
 			bombEffect=bombEffects[1];
+			//runEffect=runEffects[1];
 			break;
 		case PIG:
 			bombEffect=bombEffects[2];
+			//runEffect=runEffects[2];
 			break;
 		}
+
+		bombX=0;
 		bombEffect.reset();
 		bombEffect.start();
 		bombEffect.setPosition(x+45, y+45);
+		/*runEffect.reset();
+		runEffect.start();
+		runEffect.setPosition(x+90, y+10);*/
 	}
 }

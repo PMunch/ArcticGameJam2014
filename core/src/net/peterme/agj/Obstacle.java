@@ -53,6 +53,6 @@ public class Obstacle extends GameObject {
 		}
 	}
 	public void step(){
-		x+=4;
+		x+=6;
 	}
 }
