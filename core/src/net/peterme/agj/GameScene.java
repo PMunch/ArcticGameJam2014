@@ -6,31 +6,22 @@ import net.peterme.agj.ManBearPig.MorphMode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 
 public class GameScene extends Scene {
 	private ManBearPig manBearPig;
-	private World world;
-	private Box2DDebugRenderer debugRenderer;
-	private Matrix4 debugMatrix;
+	//private World world;
+	//private Box2DDebugRenderer debugRenderer;
+	//private Matrix4 debugMatrix;
 	private SkyBackground bg;
-	private GameGround ground;
-	private Obstacle obst;
-	private Pickup pickup;
-	private Barrier barrier;
+	public GameGround ground;
+	//private Obstacle obst;
+	public ArrayList<Obstacle> obstacles;
+	//private Pickup pickup;
+	public ArrayList<Pickup> pickups;
+	//private Barrier barrier;
 	public int score = 0;
 	//private ParticleSystem partSystem;
 	//private ParticleEffectActor partSystem;
@@ -65,31 +56,64 @@ public class GameScene extends Scene {
 	public GameScene() {
 		super();
 		Json json = new Json();
-		//JsonValue root = new JsonReader().parse(Gdx.files.internal("level1.js"));
-		Level level = json.fromJson(Level.class, Gdx.files.internal("level1peter.js"));
-		//addActor(new Ground("tile.png"));
-		world = new World(new Vector2(0, -17), true); 
-		debugRenderer = new Box2DDebugRenderer();
-	    //debugMatrix=camera.combined.cpy();//new Matrix4(camera.combined);
-	    //debugMatrix.scale(1/1000000f, 1/1000000f, 1f);
-	    debugMatrix = new OrthographicCamera( 1280/100f, 720/100f ).combined;
-	    debugMatrix.setTranslation(new Vector3(-1f,-1f,0));
-	    //ParticleEffect bombEffect = new ParticleEffect();
-		//bombEffect.load(Gdx.files.internal("particle1.p"), Gdx.files.internal("."));
-
-	    //partSystem = new ParticleEffectActor(bombEffect);
+		Level level = json.fromJson(Level.class, Gdx.files.internal("level1.js"));
 	    bg = new SkyBackground("bakgrunn1.png");
 		addActor(bg);
-		ground = new GameGround(world,level.layer.get(1).data,level.layer.get(1).width);
+		ground = new GameGround(level.layer.get(1).data,level.layer.get(1).width);
 		addActor(ground);
-		manBearPig = new ManBearPig("mannbarschwein.png",world,this); 
-		manBearPig.x=1092;
-		manBearPig.y=120;
+		manBearPig = new ManBearPig("mannbarschwein.png",this);
+		//manBearPig.x=1092;
+		//manBearPig.y=120;
+		manBearPig.setPosition(1092, 120);
 
 		//stage.addActor(partSystem);
-		//obst = new Obstacle("sump4.png", MorphMode.PIG, manBearPig);
+		obstacles=new ArrayList<Obstacle>();
+		pickups = new ArrayList<Pickup>();
+		for(Entity entity:level.entities){
+			if(entity.type.equals("EntityGate")){
+				Obstacle gate = null;
+				switch(entity.settings.particleType){
+				case 1:
+					gate = new Obstacle("gate.png",MorphMode.MAN,manBearPig);
+					break;
+				case 2:
+					gate = new Obstacle("skog.png",MorphMode.BEAR,manBearPig);
+					break;
+				case 3:
+					gate = new Obstacle("sump4.png",MorphMode.PIG,manBearPig);
+					break;
+				}
+				if(gate!=null){
+					gate.setPosition(entity.x-(level.layer.get(1).width*45-1280),
+									(int) (720-(entity.y+gate.getHeight())));
+					obstacles.add(gate);
+					addActor(gate);
+				}
+			}else if(entity.type.equals("EntityPickup")){
+				Pickup pickup = null;
+				switch(entity.settings.particleType){
+				case 1:
+					pickup = new Pickup("pickup1.png",MorphMode.MAN,manBearPig);
+					break;
+				case 2:
+					pickup = new Pickup("pickup2.png",MorphMode.BEAR,manBearPig);
+					break;
+				case 3:
+					pickup = new Pickup("pickup3.png",MorphMode.PIG,manBearPig);
+					break;
+				}
+				if(pickup!=null){
+					pickup.setPosition(entity.x-(level.layer.get(1).width*45-1280),
+									(int) (720-(entity.y+pickup.getHeight())));
+					pickups.add(pickup);
+					addActor(pickup);
+				}
+			}
+		}
+		/*obst = new Obstacle("gate.png", MorphMode.MAN, manBearPig);
 		//obst = new PigGate(manBearPig);
-		//obst.x=-280;
+		obst.x=-400;
+		obst.y=45;*/
 		//barrier = new Barrier("obstacle1.png",world,-800,200);
 		//addActor(barrier);
 		//obst.y=50;
@@ -137,9 +161,14 @@ public class GameScene extends Scene {
 	public void render(float delta){
 		super.render(delta);
 		if(manBearPig.isAlive){
-	        world.step( delta, 8, 3 );
-	        debugRenderer.render(world, debugMatrix);
-			//obst.step();
+	        //world.step( delta, 8, 3 );
+	        //debugRenderer.render(world, debugMatrix);
+			for(Obstacle gate:obstacles){
+				gate.step();
+			}
+			for(Pickup pickup:pickups){
+				pickup.step();
+			}
 			bg.step();
 			ground.step(delta);
 			//pickup.step();

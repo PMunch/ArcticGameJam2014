@@ -39,7 +39,7 @@ public class GameObject extends Actor {
 		if(texture != null)
 			batch.draw(texture,x,y,texture.getWidth(),texture.getHeight());
 		if(animation != null){
-			batch.draw(animation.getKeyFrame(elapsedTime),x,y);
+			batch.draw(animation.getKeyFrame(elapsedTime),getX(),getY());
 			//Gdx.app.log("Animation", "ElapsedTime: "+elapsedTime);
 		}
     }

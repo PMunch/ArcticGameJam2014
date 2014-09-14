@@ -18,7 +18,6 @@ public class ArcticGameJam extends Game {
 				toDestroy = currentScene;
 				currentScene = new GameScene();
 				currentScene.addListener(restartGame);
-				setScreen(currentScene);
 				Gdx.input.setInputProcessor(currentScene.stage);
 				return true;
 			}
@@ -33,7 +32,6 @@ public class ArcticGameJam extends Game {
 				toDestroy = currentScene;
 				currentScene = new GameScene();
 				currentScene.addListener(restartGame);
-				setScreen(currentScene);
 				Gdx.input.setInputProcessor(currentScene.stage);
 				return true;
 			}
@@ -49,6 +47,7 @@ public class ArcticGameJam extends Game {
 		if(toDestroy!=null){
 			toDestroy.dispose();
 			toDestroy=null;
+			setScreen(currentScene);
 		}
 	}
 }

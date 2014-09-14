@@ -1,14 +1,19 @@
 package net.peterme.agj;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -37,7 +42,7 @@ public class ManBearPig extends GameObject {
 	private Animation manimation;
 	private Animation bearimation;
 	private Animation pigimation;
-	public int drawnByObstacle = 0;
+	public boolean drawnByObstacle = false;
 	public MorphMode mode;
 	private Rumble rumble;
 	public Scene scene;
@@ -48,6 +53,9 @@ public class ManBearPig extends GameObject {
 	private ParticleEffect runEffect;
 	private ParticleEffect[] runEffects;
 	private float bombX;
+	public Rectangle collisionRect;
+	private float ySpd=0;
+	private float gravity=.5f;
 	//private Random rand;
 	//private Texture particleTexture;
 	//private Particle[] particles;
@@ -64,7 +72,7 @@ public class ManBearPig extends GameObject {
 		BEAR,
 		PIG
 	};
-	public ManBearPig(String image,World world,final Scene scene) {
+	public ManBearPig(String image/*,World world*/,final Scene scene) {
 		super();
 		rumble = new Rumble();
 		this.scene = scene;
@@ -120,51 +128,9 @@ public class ManBearPig extends GameObject {
         animation = manimation;
         mode=MorphMode.MAN;
         
-        	// First we create a body definition
-     		BodyDef bodyDef = new BodyDef();
-     		// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
-     		bodyDef.type = BodyType.DynamicBody;
-     		// Set our body's starting position in the world
-     		//bodyDef.position.set(1137, 135);
-     		bodyDef.position.set(1132/100f, 200/100f);
-     		bodyDef.fixedRotation=true;
-
-     		// Create our body in the world using our body definition
-     		body = world.createBody(bodyDef);
-
-     		// Create a circle shape and set its radius to 6
-     		PolygonShape rect = new PolygonShape();
-     		//rect.setAsBox(40/100f, 40/100f);
-     		Vector2[] vertices ={new Vector2(-0.30f,.4f),
-     				new Vector2(-0.4f,0.30f),
-     				new Vector2(-0.4f,-0.30f),
-     				new Vector2(-0.30f,-0.4f),
-     				new Vector2(0.30f,-0.4f),
-     				new Vector2(0.4f,-0.30f),
-     				new Vector2(0.4f,0.30f),
-     				new Vector2(0.30f,0.4f)};
-     		rect.set(vertices);
-     		//rect.setRadius(40/100f);
-     		//CircleShape circ = new CircleShape();
-     		//circ.setRadius(40/100f);
-
-     		// Create a fixture definition to apply our shape to
-     		FixtureDef fixtureDef = new FixtureDef();
-     		fixtureDef.shape = rect;
-     		fixtureDef.density = 0.5f; 
-     		fixtureDef.friction = 0f;
-     		fixtureDef.restitution = 0;//.6f; // Make it bounce a little bit
-
-     		// Create our fixture and attach it to the body
-     		Fixture fixture = body.createFixture(fixtureDef);
-     		fixture.setUserData("player");
-
-     		// Remember to dispose of any shapes after you're done with them!
-     		// BodyDef and FixtureDef don't need disposing, but shapes do.
-     		//circ.dispose();
-     		rect.dispose();
+        collisionRect = new Rectangle(getX(),getY(), texture.getWidth()/12, texture.getHeight());
      		
-     		world.setContactListener(new ContactListener(){
+     	/*	world.setContactListener(new ContactListener(){
 
 				@Override
 				public void beginContact(Contact contact) {
@@ -214,12 +180,18 @@ public class ManBearPig extends GameObject {
 					
 				}
      			
-     		});
+     		});*/
+	}
+	@Override
+	public void setPosition(float x, float y){
+		super.setPosition(x, y);
+		collisionRect.setPosition(x, y);
 	}
 	public void jump(){
 		if(grounded){
 			grounded=false;
-			body.applyForce(new Vector2(0,180), body.getPosition(), true);
+			ySpd=-15;
+			setPosition(getX(),getY()+2);
 		}
 	}
 	public void morph(){
@@ -245,48 +217,68 @@ public class ManBearPig extends GameObject {
 	@Override
 	public void act(float delta){
 		super.act(delta);
-		/*Gdx.app.log("Test", body.getPosition().x+"");
-		if(body.getPosition().x>12){
-			  die();
-		}*/
-		//x=(int) (body.getPosition().x*100f-45);
+		ySpd+=gravity;
+		Rectangle tileRect = new Rectangle();
+		ArrayList<Rectangle[]> colRects = ((GameScene)scene).ground.colRects;
+		for(int i=0;i<5;i++){
+			for(int j=0;j<16;j++){
+			//for(Rectangle rect:colRects.get(i)){
+				Rectangle rect = colRects.get(i)[j];
+				if(rect!=null){
+					int offset=(int) (1280-(i-1+((GameScene)scene).ground.groundOffset)*45);//+((GameScene)scene).ground.groundOffset)*45;
+					tileRect.set(rect.x+offset,rect.y,rect.width,rect.height);
+					if(tileRect.overlaps(collisionRect)){
+						if(tileRect.y<collisionRect.y+ySpd){
+							ySpd=0;
+							setPosition(getX(),tileRect.y+tileRect.height);
+							grounded=true;
+							if(((GameScene)scene).ground.tiles.get(i)[j]==3){
+								die();
+							}
+						}else if(tileRect.y>collisionRect.y+collisionRect.height+ySpd){
+							setPosition(getX(),tileRect.y-collisionRect.height);
+							ySpd=0;
+						}else{
+							die();
+							ySpd=0;
+						}
+						
+					}
+				}
+			}
+		}
+		ArrayList<Obstacle> obstacles = ((GameScene)scene).obstacles;
+		drawnByObstacle=false;
+		for(int i=0;i<obstacles.size();i++){
+			if(obstacles.get(i).collisionRect.overlaps(collisionRect)){
+				obstacles.get(i).drawPlayer=true;
+				drawnByObstacle=true;
+			}else{
+				obstacles.get(i).drawPlayer=false;
+			}
+		}
+		ArrayList<Pickup> pickups = ((GameScene)scene).pickups;
+		for(int i=0;i<pickups.size();i++){
+			Pickup pickup = pickups.get(i);
+			if(pickup.collisionRect.overlaps(collisionRect)){
+				if(pickup.openMode==mode){
+  				  pickup.dead=true;
+  			  }
+			}
+		}
+		setPosition(getX(),getY()-ySpd);
 		if(action!=null){
-			//action.act(delta);
 			action.act(delta);
-		}else{
-			y=(int) (body.getPosition().y*100f-45);
 		}
 		if (rumble.time  > 0){
 			rumble.tick(delta);
 		}
 		if(bombEffect!=null){
-			bombEffect.setPosition(x+45+bombX, y+45);
+			bombEffect.setPosition(getX()+45+bombX, getY()+45-ySpd);
 			bombEffect.update(delta);
-			bombX+=6;
+			if(isAlive)
+				bombX+=12;
 		}
-		/*if(runEffect!=null){
-			runEffect.update(delta);
-			runEffect.start();
-			runEffect.setPosition(x+90, y+10);
-		}*/
-		/*for(int i=0;i<15;i++){
-			if(particles[i]==null){
-				if(rand.nextInt(100)>80){
-					particles[i]= new Particle();
-					particles[i].life=1f;
-					particles[i].texture=particleTexture;
-					particles[i].x=x+45;
-					particles[i].y=y;
-				}
-			}else{
-				particles[i].life-=0.03;
-				particles[i].x+=4;
-				particles[i].y+=rand.nextFloat();
-				if(particles[i].life<0f){
-					particles[i]=null;
-				}
-			}
-		}*/
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
@@ -295,9 +287,18 @@ public class ManBearPig extends GameObject {
 		if(runEffect!=null)
 			runEffect.draw(batch);
 		if(isAlive){
-			if(drawnByObstacle==0)
+			if(!drawnByObstacle)
 				super.draw(batch,alpha);
 		}
+		/*ShapeRenderer sr = new ShapeRenderer();
+        sr.setColor(Color.BLACK);
+        sr.setProjectionMatrix(scene.camera.combined);
+        sr.begin(ShapeType.Line);
+        sr.line(collisionRect.x,collisionRect.y,collisionRect.x+collisionRect.width,collisionRect.y);
+        sr.line(collisionRect.x+collisionRect.width,collisionRect.y,collisionRect.x+collisionRect.width,collisionRect.y+collisionRect.height);
+        sr.line(collisionRect.x+collisionRect.width,collisionRect.y+collisionRect.height,collisionRect.x,collisionRect.y+collisionRect.height);
+        sr.line(collisionRect.x,collisionRect.y+collisionRect.height,collisionRect.x,collisionRect.y);
+        sr.end();*/
 	}
 	public void die(){
 		if(isAlive){
@@ -331,7 +332,7 @@ public class ManBearPig extends GameObject {
 		bombX=0;
 		bombEffect.reset();
 		bombEffect.start();
-		bombEffect.setPosition(x+45, y+45);
+		bombEffect.setPosition(getX()+45, getY()+45);
 		/*runEffect.reset();
 		runEffect.start();
 		runEffect.setPosition(x+90, y+10);*/
