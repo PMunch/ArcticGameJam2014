@@ -19,11 +19,14 @@ public class SkyBackground extends GameObject {
 	}
 	public SkyBackground(String image) {
 		super(image);
-		textures=new Texture[4];
+		textures=new Texture[7];
 		textures[0]=loadImage("fjell2.png");
 		textures[1]=loadImage("fjell3.png");
 		textures[2]=loadImage("fjell4.png");
 		textures[3]=loadImage("tre1.png");
+		textures[4]=loadImage("tre2.png");
+		textures[5]=loadImage("tre3.png");
+		textures[6]=loadImage("tre4.png");
 		bgImages = new ArrayList<BgImage>();
 		rand = new Random();
 		for(int i=0;i<4;i++){
@@ -54,7 +57,7 @@ public class SkyBackground extends GameObject {
 	private void addNewBgImage(){
 		BgImage bgImage = new BgImage();
 		//bgImages[i]=new BgImage();
-		bgImage.texture = 0;//rand.nextInt(4);
+		bgImage.texture = rand.nextInt(4);
 		bgImage.depth = 1+rand.nextFloat()*2;
 		bgImage.x = -textures[bgImage.texture].getWidth()*(1f/bgImage.depth);//+rand.nextInt(1280);
 		int j=0;
@@ -67,10 +70,10 @@ public class SkyBackground extends GameObject {
 		}
 		bgImages.add(j<bgImages.size()?j:bgImages.size(),bgImage);
 	}
-	public void step(){
+	public void step(float delta){
 		for(int i=0;i<bgImages.size();i++){
 			BgImage bgImage = bgImages.get(i);
-			bgImage.x+=bgImage.depth;
+			bgImage.x+=bgImage.depth*delta*50;
 			if(bgImage.x>1280){
 				bgImages.remove(i);
 				addNewBgImage();

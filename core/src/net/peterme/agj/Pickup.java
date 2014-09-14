@@ -17,8 +17,8 @@ public class Pickup extends GameObject {
 		this.player=player;
 		collisionRect = new Rectangle(getX(),getY(),getHeight(),getWidth());
 	}
-	public void step(){
-		setPosition(getX()+6,getY());
+	public void step(float delta){
+		setPosition(getX()+delta*60*6,getY());
 	}
 	@Override
 	public void act(float delta){

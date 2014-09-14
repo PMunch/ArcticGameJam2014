@@ -145,39 +145,6 @@ public class GameGround extends GameObject {
 			//ground.add(0, 1);
 		}
 	}
-	/*public Body createBody(int i, int j){
-		// First we create a body definition
- 		BodyDef bodyDef = new BodyDef();
- 		// We set our body to dynamic, for something like ground which doesn't move we would set it to StaticBody
- 		bodyDef.type = BodyType.KinematicBody;
- 		// Set our body's starting position in the world
- 		//bodyDef.position.set(1137, 135);
- 		bodyDef.position.set((i*45-50/2)/100f, (j*45+45/2)/100f);
-
- 		// Create our body in the world using our body definition
- 		Body body = world.createBody(bodyDef);
- 		body.setLinearVelocity(3.6f, 0);
-
- 		// Create a circle shape and set its radius to 6
- 		PolygonShape rect = new PolygonShape();
- 		rect.setAsBox(45/200f, 45/200f);
-
- 		// Create a fixture definition to apply our shape to
- 		FixtureDef fixtureDef = new FixtureDef();
- 		fixtureDef.shape = rect;
- 		fixtureDef.density = 0.5f; 
- 		fixtureDef.friction = 0f;
- 		fixtureDef.restitution = 0;//.6f; // Make it bounce a little bit
-
- 		// Create our fixture and attach it to the body
- 		Fixture fixture = body.createFixture(fixtureDef);
- 		fixture.setUserData("ground");
-
- 		// Remember to dispose of any shapes after you're done with them!
- 		// BodyDef and FixtureDef don't need disposing, but shapes do.
- 		rect.dispose();
- 		return body;
-	}*/
 	public Rectangle createRect(int i, int j){
 		return new Rectangle(0,j*45,45,45);
 	}
