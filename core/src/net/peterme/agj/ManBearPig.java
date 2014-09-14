@@ -48,6 +48,7 @@ public class ManBearPig extends GameObject {
 	public Scene scene;
 	public boolean isAlive = true;
 	private Action action;
+	private ParticleEffect deathEffect;
 	private ParticleEffect bombEffect;
 	private ParticleEffect[] bombEffects;
 	private ParticleEffect runEffect;
@@ -96,6 +97,9 @@ public class ManBearPig extends GameObject {
 		bombEffects[1].load(Gdx.files.internal("particle2.p"), Gdx.files.internal(""));
 		bombEffects[2] = new ParticleEffect();
 		bombEffects[2].load(Gdx.files.internal("particle3.p"), Gdx.files.internal(""));
+	
+		deathEffect = new ParticleEffect();
+		deathEffect.load(Gdx.files.internal("particleDie.p"), Gdx.files.internal(""));
 		
 
 		/*runEffect = runEffects[0];
@@ -279,6 +283,10 @@ public class ManBearPig extends GameObject {
 			if(isAlive)
 				bombX+=12;
 		}
+		if(deathEffect!=null){
+			deathEffect.setPosition(getX()+45, getY());
+			deathEffect.update(delta);
+		}
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
@@ -286,6 +294,8 @@ public class ManBearPig extends GameObject {
 			bombEffect.draw(batch);
 		if(runEffect!=null)
 			runEffect.draw(batch);
+		if(deathEffect!=null)
+			deathEffect.draw(batch);
 		if(isAlive){
 			if(!drawnByObstacle)
 				super.draw(batch,alpha);
@@ -303,7 +313,10 @@ public class ManBearPig extends GameObject {
 	public void die(){
 		if(isAlive){
 			isAlive=false;
-			explode();
+			//explode();
+			deathEffect.reset();
+			deathEffect.start();
+			deathEffect.setPosition(getX()+45, getY());
 			Timer.schedule(new Task(){
                 @Override
                 public void run() {

@@ -164,12 +164,12 @@ public class GameScene extends Scene {
 	        //world.step( delta, 8, 3 );
 	        //debugRenderer.render(world, debugMatrix);
 			for(Obstacle gate:obstacles){
-				gate.step();
+				gate.step(delta);
 			}
 			for(Pickup pickup:pickups){
-				pickup.step();
+				pickup.step(delta);
 			}
-			bg.step();
+			bg.step(delta);
 			ground.step(delta);
 			//pickup.step();
 			//barrier.step();

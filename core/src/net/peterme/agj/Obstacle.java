@@ -52,10 +52,10 @@ public class Obstacle extends GameObject {
 			dead=true;
 		}
 	}
-	public void step(){
+	public void step(float delta){
 		//setX(getX()+6);
 		//x+=6;
-		setPosition(getX()+6,getY());
+		setPosition(getX()+delta*60*6,getY());
 	}
 	@Override
 	public float getHeight(){
