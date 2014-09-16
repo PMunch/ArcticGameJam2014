@@ -1,5 +1,7 @@
 package net.peterme.agj;
 
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -12,8 +14,8 @@ public class Barrier extends GameObject {
 
 	private World world;
 	private Body body;
-	public Barrier(String image,World world,int x,int y) {
-		super(image);
+	public Barrier(String image,World world,int x,int y,TextureAtlas textures) {
+		super(image,textures);
 		this.world=world;
 		this.x=x;
 		this.y=y;

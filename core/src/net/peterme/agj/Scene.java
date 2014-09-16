@@ -3,8 +3,10 @@ package net.peterme.agj;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -18,9 +20,11 @@ public class Scene /*extends Group*/ implements Screen {
 	public Stage stage;
 	public Camera camera;
 	public Viewport viewport;
+	public TextureAtlas textures;
 	//public Group sceneGroup;
 	
-	public Scene(){
+	public Scene(TextureAtlas textures){
+		this.textures=textures;
 		camera = new OrthographicCamera();
 	    viewport = new FitViewport(1280, 720, camera);
 		stage = new Stage(viewport);
@@ -86,6 +90,7 @@ public class Scene /*extends Group*/ implements Screen {
 	public void dispose() {
 		/*for(Actor child:stage.getActors()){
 			((GameObject)child).dead=true;
+			((GameObject)child).act(0);
 		}*/
 		stage.dispose();
 	}

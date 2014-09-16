@@ -3,8 +3,10 @@ package net.peterme.agj;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -21,7 +23,7 @@ public class GameGround extends GameObject {
 	//private ArrayList<Body> bodies;
 	public float groundOffset = 0f;
 	private float groundSpeed = 0.134f;
-	private Texture[] textures;
+	private TextureRegion[] textures;
 	//private ArrayList<Body[]> bodies;
 	public ArrayList<Rectangle[]> colRects;
 	public ArrayList<int[]> tiles;
@@ -30,16 +32,18 @@ public class GameGround extends GameObject {
 	private int currentWidth;
 	private int[][] data;
 	//private World world;
+	private GameScene scene;
 	
-	public GameGround(/*World world,*/int[][] data,int totalWidth) {
-		super();
+	public GameGround(/*World world,*/int[][] data,int totalWidth,GameScene scene) {
+		super(scene.textures);
 		this.totalWidth = totalWidth;
 		this.data=data;
+		this.scene = scene;
 		//this.world=world;
-		textures = new Texture[3];
-		textures[0]=loadImage("tile1.png");
-		textures[1]=loadImage("obstacle1.png");
-		textures[2]=loadImage("obstacle2.png");
+		textures = new TextureRegion[3];
+		textures[0]=loadImage("Main/tile1");
+		textures[1]=loadImage("Main/obstacle1");
+		textures[2]=loadImage("Main/obstacle2");
 		//ground = new ArrayList<Integer>();//new int[41];
 		//bodies = new ArrayList<Body>();
 		//bodies =new ArrayList<Body[]>(30);
@@ -119,9 +123,9 @@ public class GameGround extends GameObject {
 		super.act(delta);
 		
 	}*/
-	public void step(float delta){
-		groundOffset+=delta*8;
-		if(groundOffset>1){
+	public void act(float delta){
+		groundOffset+=delta*8*scene.groundSpeed;
+		while(groundOffset>1){
 			groundOffset-=1f;
 			tiles.remove(0);
 			int[] row = new int[16];

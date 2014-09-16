@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -37,7 +39,7 @@ import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class ManBearPig extends GameObject {
 	//private Animation walkAnimation;
-	private boolean grounded = false;
+	public boolean grounded = false;
 	private Body body;
 	private Animation manimation;
 	private Animation bearimation;
@@ -73,8 +75,8 @@ public class ManBearPig extends GameObject {
 		BEAR,
 		PIG
 	};
-	public ManBearPig(String image/*,World world*/,final Scene scene) {
-		super();
+	public ManBearPig(String image/*,World world*/,final Scene scene,TextureAtlas textures) {
+		super(textures);
 		rumble = new Rumble();
 		this.scene = scene;
 		//rand = new Random();
@@ -106,8 +108,8 @@ public class ManBearPig extends GameObject {
 		runEffect.start();
 		runEffect.setPosition(x+90, y+10);*/
 		
-		Texture texture = loadImage(image);
-		TextureRegion[][] tmp = TextureRegion.split(texture, 90, 90);              // #10
+		TextureRegion texture = loadImage(image);
+		TextureRegion[][] tmp = texture.split( 90, 90);              // #10
         TextureRegion[] manFrames = new TextureRegion[4];
         int index = 0;
         for (int j = 0; j < 4; j++) {
@@ -132,7 +134,7 @@ public class ManBearPig extends GameObject {
         animation = manimation;
         mode=MorphMode.MAN;
         
-        collisionRect = new Rectangle(getX(),getY(), texture.getWidth()/12, texture.getHeight());
+        collisionRect = new Rectangle(getX()+10,getY(), texture.getRegionWidth()/12-20, texture.getRegionHeight());
      		
      	/*	world.setContactListener(new ContactListener(){
 
@@ -189,13 +191,15 @@ public class ManBearPig extends GameObject {
 	@Override
 	public void setPosition(float x, float y){
 		super.setPosition(x, y);
-		collisionRect.setPosition(x, y);
+		collisionRect.setPosition(x+10, y);
+		//collisionRect.setY(y);
 	}
 	public void jump(){
 		if(grounded){
 			grounded=false;
 			ySpd=-11;
-			setPosition(getX(),getY()+2);
+			//setPosition(getX(),getY()+2);
+			Gdx.app.log("test", "jump");
 		}
 	}
 	public void morph(){
@@ -222,31 +226,65 @@ public class ManBearPig extends GameObject {
 	public void act(float delta){
 		super.act(delta);
 		ySpd+=gravity;
+		grounded=false;
+		setPosition(getX(),getY()-ySpd);
 		Rectangle tileRect = new Rectangle();
 		ArrayList<Rectangle[]> colRects = ((GameScene)scene).ground.colRects;
-		for(int i=0;i<5;i++){
+		
+		//collisionRect.set(collisionRect.x,collisionRect.y-ySpd,collisionRect.width,collisionRect.height+ySpd);
+		for(int i=0;i<6;i++){
 			for(int j=0;j<16;j++){
 			//for(Rectangle rect:colRects.get(i)){
 				Rectangle rect = colRects.get(i)[j];
 				if(rect!=null){
-					int offset=(int) (1280-(i-1+((GameScene)scene).ground.groundOffset)*45);//+((GameScene)scene).ground.groundOffset)*45;
-					tileRect.set(rect.x+offset,rect.y,rect.width,rect.height);
+					//int offset=(int) (1280-(i-1)*45-(((GameScene)scene).groundSpeed*delta*45*8));//-(1-((GameScene)scene).ground.groundOffset)*22);
+					//int offset=1280-(i-1)*45;
+					//float speedOffset=((GameScene)scene).groundSpeed*delta*45*8;
+					tileRect.set(1280-(i+((GameScene)scene).ground.groundOffset)*45,rect.y,rect.width,rect.height);
+					//Gdx.app.log("Tile", tileRect.x+" "+tileRect.width);
 					if(tileRect.overlaps(collisionRect)){
-						if(tileRect.y<collisionRect.y+ySpd){
-							ySpd=0;
-							setPosition(getX(),tileRect.y+tileRect.height);
-							grounded=true;
-							if(((GameScene)scene).ground.tiles.get(i)[j]==3){
-								die();
+						//Always die if tile is spike
+						if(((GameScene)scene).ground.tiles.get(i)[j]==3){
+							die();
+						}
+						//Falling from above
+						if(ySpd>0){
+							if(tileRect.y+tileRect.height/1.5<collisionRect.y){
+								ySpd=0;
+								setPosition(getX(),tileRect.y+tileRect.height);
+								grounded=true;
 							}
-						}else if(tileRect.y>collisionRect.y+collisionRect.height+ySpd){
+						}
+						//Jumping upwards
+						if(ySpd<0){
+							if(tileRect.y>collisionRect.y+collisionRect.height){
+								ySpd=0;
+								setPosition(getX(),tileRect.y-collisionRect.height);
+							}
+						}
+						//Sideways collision
+						if((int) tileRect.y+tileRect.height>(int) collisionRect.y && (int) tileRect.y<(int) collisionRect.y+collisionRect.height){
+							/*if(isAlive)
+								Gdx.app.log("test",""+(i+((GameScene)scene).ground.groundOffset)*45);*/
+							die();
+							ySpd=0;
+						}
+						/*if(tileRect.y+tileRect.height<collisionRect.y){
+							if(ySpd>0){
+								ySpd=0;
+								setPosition(getX(),tileRect.y+tileRect.height+ySpd);
+								grounded=true;
+								if(((GameScene)scene).ground.tiles.get(i)[j]==3){
+									die();
+								}
+							}
+						}else if(tileRect.y>collisionRect.y+collisionRect.height){
 							setPosition(getX(),tileRect.y-collisionRect.height);
 							ySpd=0;
 						}else{
 							die();
 							ySpd=0;
-						}
-						
+						}*/
 					}
 				}
 			}
@@ -270,7 +308,7 @@ public class ManBearPig extends GameObject {
   			  }
 			}
 		}
-		setPosition(getX(),getY()-ySpd);
+		//collisionRect = oldColRect;
 		if(action!=null){
 			action.act(delta);
 		}
@@ -300,18 +338,10 @@ public class ManBearPig extends GameObject {
 			if(!drawnByObstacle)
 				super.draw(batch,alpha);
 		}
-		/*ShapeRenderer sr = new ShapeRenderer();
-        sr.setColor(Color.BLACK);
-        sr.setProjectionMatrix(scene.camera.combined);
-        sr.begin(ShapeType.Line);
-        sr.line(collisionRect.x,collisionRect.y,collisionRect.x+collisionRect.width,collisionRect.y);
-        sr.line(collisionRect.x+collisionRect.width,collisionRect.y,collisionRect.x+collisionRect.width,collisionRect.y+collisionRect.height);
-        sr.line(collisionRect.x+collisionRect.width,collisionRect.y+collisionRect.height,collisionRect.x,collisionRect.y+collisionRect.height);
-        sr.line(collisionRect.x,collisionRect.y+collisionRect.height,collisionRect.x,collisionRect.y);
-        sr.end();*/
 	}
 	public void die(){
 		if(isAlive){
+			Gdx.app.log("Dead", "Game over");
 			isAlive=false;
 			//explode();
 			deathEffect.reset();

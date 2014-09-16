@@ -1,5 +1,6 @@
 package net.peterme.agj;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,12 +15,15 @@ public class Obstacle extends GameObject {
 	private ManBearPig player;
 	public boolean drawPlayer;
 	public Rectangle collisionRect;
-	public Obstacle(String image,MorphMode openMode,ManBearPig player) {
-		//super(image);
+	private GameScene scene;
+	public Obstacle(String image,MorphMode openMode,ManBearPig player,GameScene scene) {
+		super(scene.textures);
 		this.openMode = openMode;
 		this.player=player;
-		Texture tex = loadImage(image);
-		TextureRegion[][] tmp = TextureRegion.split(tex, tex.getWidth()/4, tex.getHeight());
+		this.scene=scene;
+		TextureRegion tex = loadImage(image);
+		//Gdx.app.log("Nulltest", ""+tex+" "+tex.getRegionWidth());
+		TextureRegion[][] tmp = tex.split( tex.getRegionWidth()/4, tex.getRegionHeight());
 		obstacleParts = new TextureRegion[4];
         int index = 0;
         for (int j = 0; j < 4; j++) {
@@ -52,10 +56,11 @@ public class Obstacle extends GameObject {
 			dead=true;
 		}
 	}
-	public void step(float delta){
+	public void act(float delta){
+		super.act(delta);
 		//setX(getX()+6);
 		//x+=6;
-		setPosition(getX()+delta*60*6,getY());
+		setPosition(getX()+delta*360*scene.groundSpeed,getY());
 	}
 	@Override
 	public float getHeight(){

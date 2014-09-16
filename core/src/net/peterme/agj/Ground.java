@@ -5,19 +5,22 @@ import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 
 public class Ground extends GameObject {
 	private List<Integer> ground;
-	private Texture underGround;
+	private TextureRegion underGround;
 	private float groundSpeed = 0.2f;
 	private float groundOffset=1f;
 	private int lastHeight = 8;
 	private Random rand = new Random();
-	public Ground(String image) {
-		super(image);
+	public Ground(String image,TextureAtlas textures) {
+		super(image, textures);
 		underGround = loadImage("tile2.png");
 		ground = new ArrayList();//new int[41];
 		for(int i = 0; i<41; i++){
@@ -43,9 +46,9 @@ public class Ground extends GameObject {
 			ground.remove(ground.size()-1);
 			ground.add(0, getNewHeight());
 		}
-		if(dead){
+		/*if(dead){
 			underGround.dispose();
-		}
+		}*/
 	}
 	private int getNewHeight(){
 		if(rand.nextInt(100)<20){

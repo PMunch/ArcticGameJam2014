@@ -2,13 +2,20 @@ package net.peterme.agj;
 
 import java.util.ArrayList;
 
+import net.peterme.agj.LevelParser.Entity;
+import net.peterme.agj.LevelParser.Level;
 import net.peterme.agj.ManBearPig.MorphMode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.utils.Json;
 
 public class GameScene extends Scene {
 	private ManBearPig manBearPig;
@@ -22,11 +29,14 @@ public class GameScene extends Scene {
 	//private Pickup pickup;
 	public ArrayList<Pickup> pickups;
 	//private Barrier barrier;
-	public int score = 0;
-	private float groundSpeed = 1;
+	public float score = 0;
+	//public float groundSpeed = 1.8f;
+	public float groundSpeed = 1.8f;
+	private int levelProgress = 0;
+	private float waitTime = -1f;
 	//private ParticleSystem partSystem;
 	//private ParticleEffectActor partSystem;
-	public static class Level{
+	/*public static class Level{
 		private ArrayList<Entity> entities;
 		private ArrayList<Layer> layer;
 	}
@@ -53,74 +63,76 @@ public class GameScene extends Scene {
 		private int tilesize;
 		private boolean foreground;
 		private int[][] data;
-	}
-	public GameScene() {
-		super();
-		Json json = new Json();
-		Level level = json.fromJson(Level.class, Gdx.files.internal("level1.js"));
-	    bg = new SkyBackground("bakgrunn1.png");
-		addActor(bg);
-		ground = new GameGround(level.layer.get(1).data,level.layer.get(1).width);
-		addActor(ground);
-		manBearPig = new ManBearPig("mannbarschwein.png",this);
+	}*/
+	public GameScene(Level level, TextureAtlas textures) {
+		super(textures);
+		//Json json = new Json();
+		//Level level = json.fromJson(Level.class, Gdx.files.internal("level1.js"));
+	    bg = new SkyBackground("Background/Scenery/bakgrunn1",this);
+		//ground = new GameGround(level.layer.get(1).data,level.layer.get(1).width,this);
+	    int levelWidth = level.getGround().width;
+	    ground = new GameGround(level.getGround().data,levelWidth,this); 
+		manBearPig = new ManBearPig("Main/mannbarschwein",this,textures);
 		//manBearPig.x=1092;
 		//manBearPig.y=120;
 		manBearPig.setPosition(1092, 120);
-
 		//stage.addActor(partSystem);
+
+		addActor(bg);
+		addActor(ground);
 		obstacles=new ArrayList<Obstacle>();
 		pickups = new ArrayList<Pickup>();
 		for(Entity entity:level.entities){
-			if(entity.type.equals("EntityGate")){
+			if(entity.type==0){
 				Obstacle gate = null;
-				switch(entity.settings.particleType){
+				switch(entity.subType){
 				case 1:
-					gate = new Obstacle("gate.png",MorphMode.MAN,manBearPig);
+					gate = new Obstacle("Main/gate",MorphMode.MAN,manBearPig,this);
 					break;
 				case 2:
-					gate = new Obstacle("skog.png",MorphMode.BEAR,manBearPig);
+					gate = new Obstacle("Main/skog",MorphMode.BEAR,manBearPig,this);
 					break;
 				case 3:
-					gate = new Obstacle("sump4.png",MorphMode.PIG,manBearPig);
+					gate = new Obstacle("Main/sump4",MorphMode.PIG,manBearPig,this);
 					break;
 				}
 				if(gate!=null){
-					gate.setPosition(entity.x-(level.layer.get(1).width*45-1280),
+					gate.setPosition(entity.x-(levelWidth*45-1280)+300,
 									(int) (720-(entity.y+gate.getHeight())));
-					obstacles.add(gate);
+					int i=0;
+					if(obstacles.size()!=0){
+						while(obstacles.get(i).getX()>gate.getX()){
+							i++;
+							if(i==obstacles.size())
+								break;
+						}
+					}
+					obstacles.add(i,gate);
 					addActor(gate);
 				}
-			}else if(entity.type.equals("EntityPickup")){
+			}else if(entity.type==1){
 				Pickup pickup = null;
-				switch(entity.settings.particleType){
+				switch(entity.subType){
 				case 1:
-					pickup = new Pickup("pickup1.png",MorphMode.MAN,manBearPig);
+					pickup = new Pickup("Main/pickup1",MorphMode.MAN,manBearPig,this);
 					break;
 				case 2:
-					pickup = new Pickup("pickup2.png",MorphMode.BEAR,manBearPig);
+					pickup = new Pickup("Main/pickup2",MorphMode.BEAR,manBearPig,this);
 					break;
 				case 3:
-					pickup = new Pickup("pickup3.png",MorphMode.PIG,manBearPig);
+					pickup = new Pickup("Main/pickup3",MorphMode.PIG,manBearPig,this);
 					break;
 				}
 				if(pickup!=null){
-					pickup.setPosition(entity.x-(level.layer.get(1).width*45-1280),
+					pickup.setPosition(entity.x-(levelWidth*45-1280),
 									(int) (720-(entity.y+pickup.getHeight())));
 					pickups.add(pickup);
 					addActor(pickup);
 				}
 			}
 		}
-		/*obst = new Obstacle("gate.png", MorphMode.MAN, manBearPig);
-		//obst = new PigGate(manBearPig);
-		obst.x=-400;
-		obst.y=45;*/
-		//barrier = new Barrier("obstacle1.png",world,-800,200);
-		//addActor(barrier);
-		//obst.y=50;
-		//addActor(obst);
-		//pickup = new Pickup("pickup1.png", MorphMode.MAN, manBearPig, world, -600, 200);
-		//addActor(pickup);
+		//for(Obstacle obst:obstacles)
+		//	Gdx.app.log("Obstacles", ""+obst.x);
 		stage.addListener(new InputListener(){
 			@Override
 			public boolean keyDown(InputEvent event, int keyCode){
@@ -154,27 +166,63 @@ public class GameScene extends Scene {
 				return true;
 			}
 		});*/
-
 		addActor(manBearPig);
 		addActor(new ScoreBoard(this));
 	}
 	@Override
 	public void render(float delta){
 		super.render(delta);
-		if(manBearPig.isAlive){
-	        //world.step( delta, 8, 3 );
-	        //debugRenderer.render(world, debugMatrix);
-			for(Obstacle gate:obstacles){
-				gate.step(delta);
-			}
-			for(Pickup pickup:pickups){
-				pickup.step(delta);
-			}
-			bg.step(delta);
-			ground.step(delta);
-			//pickup.step();
-			//barrier.step();
-			score++;
+		/*ShapeRenderer sr = new ShapeRenderer();
+        sr.setColor(manBearPig.grounded?Color.BLACK:Color.RED);
+        sr.setProjectionMatrix(camera.combined);
+        sr.begin(ShapeType.Line);
+        sr.rect(manBearPig.collisionRect.x,manBearPig.collisionRect.y,manBearPig.collisionRect.width,manBearPig.collisionRect.height);
+        int i=28;
+        for(Rectangle[] rectL:ground.colRects){
+        	for(Rectangle rect:rectL){
+        		if(rect!=null)
+        			sr.rect((i+ground.groundOffset)*45,rect.y,rect.width,rect.height);
+        	}
+        	i--;
+        }
+        sr.end();*/
+		/*if(manBearPig.isAlive){
+		Gdx.app.log("Delta", ""+delta);
+		}*/
+		//float delta = 1/(60*6);
+		//float delta = delta2;
+		//if(levelProgress!=-1){
+		if(delta<0.1f){
+			groundSpeed=1.8f;
+		}else{
+			//waitTime-=delta;
 		}
+			if(manBearPig.isAlive){
+		        //world.step( delta, 8, 3 );
+		        //debugRenderer.render(world, debugMatrix);
+				/*for(Obstacle gate:obstacles){
+					gate.step(delta*groundSpeed);
+				}*/
+				/*for(Pickup pickup:pickups){
+					pickup.step(delta*groundSpeed);
+				}*/
+				//bg.step(delta*groundSpeed);
+				//ground.step(delta*groundSpeed);
+				//pickup.step();
+				//barrier.step();
+				score+=delta*10;
+				levelProgress+=delta*groundSpeed*60*6;
+			}else{
+				groundSpeed=0;
+			}
+		/*}else{
+			levelProgress=0;
+		}*/
+	}
+	@Override
+	public void dispose(){
+		super.dispose();
+		obstacles.clear();
+		pickups.clear();
 	}
 }

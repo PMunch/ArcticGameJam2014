@@ -2,6 +2,8 @@ package net.peterme.agj;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,9 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 public class IntroScene extends Scene{
 	Logo logo;
-	public IntroScene() {
-		addActor(new Background("menu-bg-tile.png"));
-		logo = new Logo("logo.png");
+	public IntroScene(TextureAtlas textures) {
+		super(textures);
+		addActor(new Background("menu-bg-tile.png", textures));
+		/*logo = new Logo("logo.png", textures);
 		logo.x = (int) (stage.getViewport().getWorldWidth()/2 - logo.texture.getWidth()/2);
 		logo.y = (int) (stage.getViewport().getWorldHeight()/2 - logo.texture.getHeight()/2);
 		addActor(logo);
@@ -25,7 +28,7 @@ public class IntroScene extends Scene{
 				logo.fire(new GameEvent(GameEvent.Type.STARTGAME));
 				return true;
 			}
-		});
+		});*/
 	}
 
 	/*@Override

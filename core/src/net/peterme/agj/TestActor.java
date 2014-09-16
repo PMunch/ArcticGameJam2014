@@ -5,6 +5,7 @@ import javax.sound.midi.Sequence;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -31,8 +32,8 @@ public class TestActor extends GameObject implements InputProcessor {
 	public OrthogonalTiledMapRenderer mapRenderer;
 	//public OrthographicCamera camera;
 	
-	public TestActor(String image) {
-		super(image);
+	public TestActor(String image,TextureAtlas textures) {
+		super(image,textures);
 		map = new TmxMapLoader().load("level.tmx");
 		mapRenderer = new OrthogonalTiledMapRenderer(map);
 		bgTexture = new Texture(Gdx.files.internal("menu-bg-tile.png"));

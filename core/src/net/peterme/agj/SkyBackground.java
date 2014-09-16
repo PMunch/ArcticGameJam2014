@@ -8,25 +8,27 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class SkyBackground extends GameObject {
-	private Texture[] textures;
+	private TextureRegion[] textures;
 	//private BgImage[] bgImages;
 	private ArrayList<BgImage> bgImages;
 	private Random rand;
+	private GameScene scene;
 	private class BgImage{
 		public int texture;
 		public float depth;
 		public float x;
 	}
-	public SkyBackground(String image) {
-		super(image);
-		textures=new Texture[7];
-		textures[0]=loadImage("fjell2.png");
-		textures[1]=loadImage("fjell3.png");
-		textures[2]=loadImage("fjell4.png");
-		textures[3]=loadImage("tre1.png");
-		textures[4]=loadImage("tre2.png");
-		textures[5]=loadImage("tre3.png");
-		textures[6]=loadImage("tre4.png");
+	public SkyBackground(String image,GameScene scene) {
+		super(image,scene.textures);
+		this.scene=scene;
+		textures=new TextureRegion[7];
+		textures[0]=loadImage("Background/fjell2");
+		textures[1]=loadImage("Background/fjell3");
+		textures[2]=loadImage("Background/fjell4");
+		textures[3]=loadImage("Background/tre1");
+		textures[4]=loadImage("Background/tre2");
+		textures[5]=loadImage("Background/tre3");
+		textures[6]=loadImage("Background/tre4");
 		bgImages = new ArrayList<BgImage>();
 		rand = new Random();
 		for(int i=0;i<4;i++){
@@ -36,22 +38,38 @@ public class SkyBackground extends GameObject {
 			bgImages.get(i).x+=rand.nextInt(1280);
 		}
 	}
-	@Override
+	//@Override
 	public void act(float delta){
 		super.act(delta);
-		if(dead){
-			for(int i=0;i<textures.length;i++)
-				textures[i].dispose();
+		for(int i=0;i<bgImages.size();i++){
+			BgImage bgImage = bgImages.get(i);
+			bgImage.x+=bgImage.depth*delta*50*scene.groundSpeed;
+			if(bgImage.x>1280){
+				bgImages.remove(i);
+				addNewBgImage();
+			}
 		}
+		
+		/*if(dead){
+			//for(int i=0;i<textures.length;i++)
+				//textures[i].dispose();
+			manager.unload("fjell2.png");
+			manager.unload("fjell3.png");
+			manager.unload("fjell4.png");
+			manager.unload("tre1.png");
+			manager.unload("tre2.png");
+			manager.unload("tre3.png");
+			manager.unload("tre4.png");
+		}*/
 	}
 	@Override
 	public void draw(Batch batch, float alpha){
 		super.draw(batch, alpha);
 		for(int i=0;i<bgImages.size();i++){
 			BgImage bgImage = bgImages.get(i);
-			Texture tex = textures[bgImage.texture];
+			TextureRegion tex = textures[bgImage.texture];
 			TextureRegion reg = new TextureRegion(tex);
-			batch.draw(reg, bgImage.x, 0f, 0, 0, tex.getWidth(), tex.getHeight(), 1f/bgImage.depth, 1f/bgImage.depth,1);
+			batch.draw(reg, bgImage.x, 0f, 0, 0, tex.getRegionWidth(), tex.getRegionHeight(), 1f/bgImage.depth, 1f/bgImage.depth,0);
 		}
 	}
 	private void addNewBgImage(){
@@ -59,7 +77,7 @@ public class SkyBackground extends GameObject {
 		//bgImages[i]=new BgImage();
 		bgImage.texture = rand.nextInt(4);
 		bgImage.depth = 1+rand.nextFloat()*2;
-		bgImage.x = -textures[bgImage.texture].getWidth()*(1f/bgImage.depth);//+rand.nextInt(1280);
+		bgImage.x = -textures[bgImage.texture].getRegionWidth()*(1f/bgImage.depth);//+rand.nextInt(1280);
 		int j=0;
 		if(bgImages.size()>0){
 			while(bgImages.get(j).depth<bgImage.depth){
@@ -70,7 +88,7 @@ public class SkyBackground extends GameObject {
 		}
 		bgImages.add(j<bgImages.size()?j:bgImages.size(),bgImage);
 	}
-	public void step(float delta){
+	/*public void step(float delta){
 		for(int i=0;i<bgImages.size();i++){
 			BgImage bgImage = bgImages.get(i);
 			bgImage.x+=bgImage.depth*delta*50;
@@ -79,5 +97,5 @@ public class SkyBackground extends GameObject {
 				addNewBgImage();
 			}
 		}
-	}
+	}*/
 }

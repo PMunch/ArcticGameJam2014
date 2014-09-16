@@ -1,5 +1,7 @@
 package net.peterme.agj;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 
 public class Background extends GameObject {
@@ -7,14 +9,14 @@ public class Background extends GameObject {
 	public float currentBGScale = 1;
 	public float currentBGScaleDirection = 0.01f;
 	
-	public Background(String backgroundImage){
-		super(backgroundImage);
+	public Background(String backgroundImage,TextureAtlas textures){
+		super(backgroundImage,textures);
 	}
 	@Override
 	public void draw(Batch batch, float alpha){
-		for( int x = -1; x < getStage().getViewport().getWorldWidth()/texture.getWidth()+2; x++ ) {
-    		for( int y = -1; y < getStage().getViewport().getWorldHeight()/texture.getHeight()+2; y++) {
-    			batch.draw(texture,x * texture.getWidth() + bgPos,y * texture.getHeight() + bgPos, texture.getWidth() * currentBGScale, texture.getHeight() * currentBGScale);
+		for( int x = -1; x < getStage().getViewport().getWorldWidth()/texture.getRegionWidth()+2; x++ ) {
+    		for( int y = -1; y < getStage().getViewport().getWorldHeight()/texture.getRegionHeight()+2; y++) {
+    			batch.draw(texture,x * texture.getRegionWidth() + bgPos,y * texture.getRegionHeight() + bgPos, texture.getRegionWidth() * currentBGScale, texture.getRegionHeight() * currentBGScale);
     		}
     	}
 	}
@@ -34,6 +36,6 @@ public class Background extends GameObject {
 	    		currentBGScaleDirection = -currentBGScaleDirection;
 	    	}
     //	}
-    	bgPos = bgPos % texture.getHeight();
+    	bgPos = bgPos % texture.getRegionHeight();
     }
 }
