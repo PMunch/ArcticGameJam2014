@@ -96,35 +96,35 @@ Main/obstacle1
   index: -1
 Main/obstacle2
   rotate: false
-  xy: 964, 70
+  xy: 1166, 230
   size: 45, 45
   orig: 45, 45
   offset: 0, 0
   index: -1
 Main/partikkel1
   rotate: false
-  xy: 1166, 523
+  xy: 1046, 165
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 Main/partikkel2
   rotate: false
-  xy: 1248, 605
+  xy: 1728, 805
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 Main/partikkel3
   rotate: false
-  xy: 1728, 805
+  xy: 1810, 887
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 Main/partikkelBlod
   rotate: false
-  xy: 1810, 887
+  xy: 1528, 523
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -138,14 +138,14 @@ Main/pickup1
   index: -1
 Main/pickup2
   rotate: false
-  xy: 1166, 557
+  xy: 1728, 839
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
   index: -1
 Main/pickup3
   rotate: false
-  xy: 1728, 839
+  xy: 1528, 557
   size: 80, 80
   orig: 80, 80
   offset: 0, 0
@@ -164,6 +164,13 @@ Main/skog
   orig: 960, 480
   offset: 0, 0
   index: -1
+Main/sky
+  rotate: false
+  xy: 1166, 277
+  size: 360, 360
+  orig: 360, 360
+  offset: 0, 0
+  index: -1
 Main/sump4
   rotate: false
   xy: 2, 49
@@ -173,7 +180,7 @@ Main/sump4
   index: -1
 Main/tile1
   rotate: false
-  xy: 1046, 152
+  xy: 964, 70
   size: 45, 45
   orig: 45, 45
   offset: 0, 0

@@ -53,8 +53,9 @@ public class GameScene extends Scene {
 		//manBearPig.y=120;
 		manBearPig.setPosition(1022, 120);
 		//stage.addActor(partSystem);
-
 		addActor(bg);
+		addActor(new Clouds(textures,sounds));
+		addActor(ground);
 		obstacles=new ArrayList<Obstacle>();
 		pickups = new ArrayList<Pickup>();
 		for(Entity entity:level.entities){
@@ -159,7 +160,6 @@ public class GameScene extends Scene {
 		});*/
 		addActor(manBearPig);
 		addActor(new ScoreBoard(this,attempts));
-		addActor(ground);
 		if(attempts==0){
 			groundSpeed=0;
 		}else{
