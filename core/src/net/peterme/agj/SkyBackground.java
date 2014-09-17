@@ -13,6 +13,7 @@ public class SkyBackground extends GameObject {
 	private ArrayList<BgImage> bgImages;
 	private Random rand;
 	private GameScene scene;
+	private float[] weights;
 	private class BgImage{
 		public int texture;
 		public float depth;
@@ -35,9 +36,17 @@ public class SkyBackground extends GameObject {
 		textures[4]=loadImage("Background/tre2");
 		textures[5]=loadImage("Background/tre3");
 		textures[6]=loadImage("Background/tre4");
+		weights = new float[7];
+		weights[0]=0.07f;
+		weights[1]=0.1f;
+		weights[2]=0.1f;
+		weights[3]=0.13f;
+		weights[4]=0.2f;
+		weights[5]=0.2f;
+		weights[6]=0.2f;
 		bgImages = new ArrayList<BgImage>();
 		rand = new Random();
-		for(int i=0;i<8;i++){
+		for(int i=0;i<14;i++){
 			addNewBgImage();
 		}
 		for(int i=0;i<bgImages.size();i++){
@@ -80,7 +89,13 @@ public class SkyBackground extends GameObject {
 	}
 	private void addNewBgImage(){
 		BgImage bgImage = new BgImage();
-		bgImage.texture = rand.nextInt(textures.length-1);
+		float num = rand.nextFloat();
+		int i = -1;
+		while(num>0f){
+			i++;
+			num-=weights[i];
+		}
+		bgImage.texture = i;
 		bgImage.depth = bgImage.texture;
 		bgImage.scale = 1+rand.nextFloat()*2;
 		bgImage.x = -textures[bgImage.texture].getRegionWidth()*(1f/bgImage.scale);//+rand.nextInt(1280);
