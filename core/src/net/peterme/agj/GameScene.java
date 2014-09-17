@@ -51,7 +51,7 @@ public class GameScene extends Scene {
 		manBearPig = new ManBearPig("Main/mannbarschwein",this,textures,sounds);
 		//manBearPig.x=1092;
 		//manBearPig.y=120;
-		manBearPig.setPosition(1092, 120);
+		manBearPig.setPosition(1022, 120);
 		//stage.addActor(partSystem);
 
 		addActor(bg);
@@ -112,7 +112,7 @@ public class GameScene extends Scene {
 			@Override
 			public boolean keyDown(InputEvent event, int keyCode){
 				if(keyCode==Input.Keys.UP){
-					manBearPig.jump();
+					manBearPig.willJump=true;
 					return true;
 				}else if(keyCode==Input.Keys.DOWN){
 					manBearPig.morph();
@@ -121,15 +121,31 @@ public class GameScene extends Scene {
 				return false;
 			}
 			@Override
+			public boolean keyUp(InputEvent event, int keyCode){
+				if(keyCode==Input.Keys.UP){
+					manBearPig.willJump=false;
+					return true;
+				}
+				return false;
+			}
+			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button){
 				if(button==Input.Buttons.LEFT){
 					if(x>stage.getWidth()/2){
-						manBearPig.jump();
+						manBearPig.willJump=true;
 					}else{
 						manBearPig.morph();
 					}
 				}
 				return false;
+			}
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button){
+				if(button==Input.Buttons.LEFT){
+					if(x>stage.getWidth()/2){
+						manBearPig.willJump=false;
+					}
+				}
 			}
 		});
 		/*stage.addListener(new GameEventListener(){
@@ -229,7 +245,7 @@ public class GameScene extends Scene {
 				//ground.step(delta*groundSpeed);
 				//pickup.step();
 				//barrier.step();
-				score+=delta*groundSpeed*5;
+				score+=delta*groundSpeed*50;
 				//levelProgress+=delta*groundSpeed*60*6;
 			}else{
 				if(score>highScore){

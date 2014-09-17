@@ -23,8 +23,8 @@ public class ScoreIndicator extends GameObject {
         setX(x);
         setY(y);
         MoveToAction act = new MoveToAction();
-        act.setPosition(x, y+100);
-        act.setDuration(0.2f);
+        act.setPosition(x+(360*1.8f*0.3f), y+150);
+        act.setDuration(0.3f);
         addAction(sequence(act,
                 run(new Runnable(){
                     @Override

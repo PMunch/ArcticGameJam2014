@@ -29,7 +29,7 @@ public class ManBearPig extends GameObject {
 	public Rectangle collisionRect;
 	private float ySpd=0;
 	private float gravity=.5f;
-	private boolean willJump = false;
+	public boolean willJump = false;
 	private Random rand;
 	public enum MorphMode {
 		MAN,
@@ -88,7 +88,7 @@ public class ManBearPig extends GameObject {
 		//}
 	}
 	public void morph(){
-		rumble.rumble(10f, .2f,scene);
+		rumble.rumble(10f, .3f,scene);
 		sounds.shift.play();
 		if(animation==manimation){
 			animation=bearimation;
@@ -120,7 +120,7 @@ public class ManBearPig extends GameObject {
 		ArrayList<Rectangle[]> colRects = ((GameScene)scene).ground.colRects;
 		
 		//collisionRect.set(collisionRect.x,collisionRect.y-ySpd,collisionRect.width,collisionRect.height+ySpd);
-		for(int i=3;i<6;i++){
+		for(int i=4;i<7;i++){
 			for(int j=0;j<16;j++){
 			//for(Rectangle rect:colRects.get(i)){
 				Rectangle rect = colRects.get(i)[j];
@@ -216,7 +216,7 @@ public class ManBearPig extends GameObject {
 		if(willJump){
 			if(grounded)
 				performJump();
-			willJump=false;
+			//willJump=false;
 		}
 		if(grounded && isAlive && scene.groundSpeed!=0){
 			switch(mode){
@@ -247,7 +247,7 @@ public class ManBearPig extends GameObject {
 	}
 	public void die(){
 		if(isAlive){
-			rumble.rumble(15f, .3f,scene);
+			rumble.rumble(15f, .4f,scene);
 			sounds.die.play();
 			Gdx.app.log("Dead", "Game over");
 			isAlive=false;

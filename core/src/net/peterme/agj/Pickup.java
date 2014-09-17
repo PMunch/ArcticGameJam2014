@@ -26,7 +26,7 @@ public class Pickup extends GameObject {
 	public void act(float delta){
 		super.act(delta);
 		if(dead==true){
-			player.scene.addActor(new ScoreIndicator("+1000",getX(),getY(),textures,sounds));
+			player.scene.addActor(new ScoreIndicator("+1000",getX(),getY()+30,textures,sounds));
 			scene.score+=1000;
 			switch(openMode){
 			case MAN:
