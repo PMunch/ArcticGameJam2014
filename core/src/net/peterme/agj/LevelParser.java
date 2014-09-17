@@ -18,19 +18,29 @@ public class LevelParser {
 	}
 	private static class JSONSettings{
 		private int particleType;
+		@SuppressWarnings("unused")
 		private int jumpSpeed;
 	}
 	private static class JSONLayer{
+		@SuppressWarnings("unused")
 		private String name;
 		private int width;
 		private int height;
+		@SuppressWarnings("unused")
 		private boolean linkWithCollision;
+		@SuppressWarnings("unused")
 		private int visible;
+		@SuppressWarnings("unused")
 		private String tilesetName;
+		@SuppressWarnings("unused")
 		private boolean repeat;
+		@SuppressWarnings("unused")
 		private boolean preRender;
+		@SuppressWarnings("unused")
 		private int distance;
+		@SuppressWarnings("unused")
 		private int tilesize;
+		@SuppressWarnings("unused")
 		private boolean foreground;
 		private int[][] data;
 	}
@@ -74,7 +84,7 @@ public class LevelParser {
 			switch(jsonentity.type){
 			case "EntityGate":
 				entity.type = 0;
-				entity.subType=jsonentity.settings.particleType;
+				entity.subType= jsonentity.settings.particleType;
 				break;
 			case "EntityPickup":
 				entity.type = 1;

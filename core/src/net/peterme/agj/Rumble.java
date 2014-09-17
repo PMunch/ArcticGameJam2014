@@ -3,7 +3,6 @@ package net.peterme.agj;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector3;
 
 public class Rumble {
 
@@ -34,6 +33,7 @@ public class Rumble {
     this.scene = scene;
     startX = 640;//scene.camera.position.x;
     startY = 360;//scene.camera.position.y;
+	Gdx.input.vibrate((int)(time*200));
   }
         
   public void tick(float delta){

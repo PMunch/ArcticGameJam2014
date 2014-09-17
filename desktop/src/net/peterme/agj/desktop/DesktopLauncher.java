@@ -8,6 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		new LwjglApplication(new ArcticGameJam(), config);
+		config.title = "MannBärSchwein";
 		config.width=1280;
 		config.height=720;
 	}

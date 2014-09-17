@@ -13,7 +13,7 @@ public class Pickup extends GameObject {
 	//private World world;
 	//private Body body;
 	public Pickup(String image,final MorphMode openMode,final ManBearPig player,GameScene scene) {
-		super(image,scene.textures);
+		super(image,scene.textures,scene.sounds);
 		this.openMode=openMode;
 		this.player=player;
 		this.scene=scene;
@@ -26,8 +26,19 @@ public class Pickup extends GameObject {
 	public void act(float delta){
 		super.act(delta);
 		if(dead==true){
-			player.scene.addActor(new ScoreIndicator("+1000",getX(),getY(),textures));
+			player.scene.addActor(new ScoreIndicator("+1000",getX(),getY(),textures,sounds));
 			scene.score+=1000;
+			switch(openMode){
+			case MAN:
+				sounds.coin[0].play();
+				break;
+			case BEAR:
+				sounds.coin[1].play();
+				break;
+			case PIG:
+				sounds.coin[2].play();
+				break;
+			}
 		}
 		setPosition(getX()+delta*360*scene.groundSpeed,getY());
 	}

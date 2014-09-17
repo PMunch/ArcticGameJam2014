@@ -2,27 +2,15 @@ package net.peterme.agj;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
 
 public class GameGround extends GameObject {
 	//private ArrayList<Integer> ground;
 	//private ArrayList<Body> bodies;
-	public float groundOffset = 0f;
-	private float groundSpeed = 0.134f;
+	public float groundOffset = -0.555556f;//;0f;
+	//private float groundSpeed = 0.134f;
 	private TextureRegion[] textures;
 	//private ArrayList<Body[]> bodies;
 	public ArrayList<Rectangle[]> colRects;
@@ -35,7 +23,7 @@ public class GameGround extends GameObject {
 	private GameScene scene;
 	
 	public GameGround(/*World world,*/int[][] data,int totalWidth,GameScene scene) {
-		super(scene.textures);
+		super(scene.textures,scene.sounds);
 		this.totalWidth = totalWidth;
 		this.data=data;
 		this.scene = scene;
@@ -57,7 +45,7 @@ public class GameGround extends GameObject {
 		for(int i=0;i<30;i++){
 			currentWidth++;
 			for(int j=0;j<16;j++){
-				tiles.get(29-i)[j]=data[15-j][totalWidth-31+i];
+				tiles.get(29-i)[j]=data[15-j][totalWidth-30+i];
 				if(tiles.get(29-i)[j]!=0){
 		     		//body.setLinearVelocity(7f, 0);
 		     		//bodies.get(29-i)[j]=createBody(i,j);
@@ -65,6 +53,7 @@ public class GameGround extends GameObject {
 				}
 			}
 		}
+		currentWidth++;
 		/*for(int i = 0; i<30; i++){
 			//ground[i]=lastHeight;
 			ground.add(1);
@@ -130,7 +119,6 @@ public class GameGround extends GameObject {
 			tiles.remove(0);
 			int[] row = new int[16];
 			tiles.add(29,row);
-			Body temp;
 			for(int i=0;i<16;i++){
 				tiles.get(29)[i]=data[15-i][totalWidth-currentWidth];
 				//temp=bodies.get(29)[i];

@@ -4,109 +4,43 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.WorldManifold;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
-
 
 public class ManBearPig extends GameObject {
-	//private Animation walkAnimation;
 	public boolean grounded = false;
-	private Body body;
 	private Animation manimation;
 	private Animation bearimation;
 	private Animation pigimation;
 	public boolean drawnByObstacle = false;
 	public MorphMode mode;
 	private Rumble rumble;
-	public Scene scene;
+	public GameScene scene;
 	public boolean isAlive = true;
 	private Action action;
-	private ParticleEffect deathEffect;
-	private ParticleEffect bombEffect;
-	private ParticleEffect[] bombEffects;
-	private ParticleEffect runEffect;
-	private ParticleEffect[] runEffects;
-	private float bombX;
 	public Rectangle collisionRect;
 	private float ySpd=0;
 	private float gravity=.5f;
-	//private Random rand;
-	//private Texture particleTexture;
-	//private Particle[] particles;
-	/*private class Particle{
-		float x;
-		float y;
-		Texture texture;
-		float life = 0f;
-		float scale;
-		float alpha;
-	}*/
+	private boolean willJump = false;
+	private Random rand;
 	public enum MorphMode {
 		MAN,
 		BEAR,
 		PIG
 	};
-	public ManBearPig(String image/*,World world*/,final Scene scene,TextureAtlas textures) {
-		super(textures);
+	public ManBearPig(String image/*,World world*/,final GameScene scene,TextureAtlas textures,Sounds sounds) {
+		super(textures,sounds);
 		rumble = new Rumble();
 		this.scene = scene;
-		//rand = new Random();
-		//particleTexture = loadImage("partikkel1.png");
-		//particles = new Particle[15];
-		//bombEffect = new ParticleEffect();
-		//bombEffect.load(Gdx.files.internal("particle1.p"), Gdx.files.internal(""));
-		/*runEffects = new ParticleEffect[3];
-		runEffects[0] = new ParticleEffect();
-		runEffects[0].load(Gdx.files.internal("particleRun1.p"), Gdx.files.internal(""));
-		runEffects[1] = new ParticleEffect();
-		runEffects[1].load(Gdx.files.internal("particleRun2.p"), Gdx.files.internal(""));
-		runEffects[2] = new ParticleEffect();
-		runEffects[2].load(Gdx.files.internal("particleRun3.p"), Gdx.files.internal(""));*/
-		
-		bombEffects = new ParticleEffect[3];
-		bombEffects[0] = new ParticleEffect();
-		bombEffects[0].load(Gdx.files.internal("particle1.p"), Gdx.files.internal(""));
-		bombEffects[1] = new ParticleEffect();
-		bombEffects[1].load(Gdx.files.internal("particle2.p"), Gdx.files.internal(""));
-		bombEffects[2] = new ParticleEffect();
-		bombEffects[2].load(Gdx.files.internal("particle3.p"), Gdx.files.internal(""));
-	
-		deathEffect = new ParticleEffect();
-		deathEffect.load(Gdx.files.internal("particleDie.p"), Gdx.files.internal(""));
-		
-
-		/*runEffect = runEffects[0];
-		runEffect.start();
-		runEffect.setPosition(x+90, y+10);*/
+		rand = new Random();
 		
 		TextureRegion texture = loadImage(image);
 		TextureRegion[][] tmp = texture.split( 90, 90);              // #10
@@ -135,58 +69,6 @@ public class ManBearPig extends GameObject {
         mode=MorphMode.MAN;
         
         collisionRect = new Rectangle(getX()+10,getY(), texture.getRegionWidth()/12-20, texture.getRegionHeight());
-     		
-     	/*	world.setContactListener(new ContactListener(){
-
-				@Override
-				public void beginContact(Contact contact) {
-					WorldManifold manifold = contact.getWorldManifold();
-			    	  for(int j = 0; j < manifold.getNumberOfContactPoints(); j++){
-			    		  if(contact.getFixtureA().getUserData() != null &&contact.getFixtureA().getUserData().equals("ground"))
-			    			  grounded=true;
-			    		  if(contact.getFixtureB().getUserData() != null &&contact.getFixtureB().getUserData().equals("ground"))
-			    			  grounded=true;
-			    	  }
-				}
-
-				@Override
-				public void endContact(Contact contact) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void preSolve(Contact contact, Manifold oldManifold) {
-					WorldManifold manifold = contact.getWorldManifold();
-			    	  for(int j = 0; j < manifold.getNumberOfContactPoints(); j++){
-			    		  if(contact.getFixtureA().getUserData() != null &&contact.getFixtureA().getUserData() instanceof Pickup){
-			    			 Pickup pickup = ((Pickup) contact.getFixtureA().getUserData());
-			    			 if(pickup.openMode==mode){
-			    				 pickup.dead=true;
-			    				 ((GameScene) scene).score+=1000;
-			    				 scene.addActor(new ScoreIndicator("+1000",pickup.x,pickup.y));
-			    			 }
-			    			 contact.setEnabled(false);
-			    		  }
-			    		  if(contact.getFixtureB().getUserData() != null &&contact.getFixtureB().getUserData() instanceof Pickup){
-			    			  Pickup pickup = ((Pickup) contact.getFixtureB().getUserData());
-			    			  if(pickup.openMode==mode){
-			    				  pickup.dead=true;
-			    				 scene.addActor(new ScoreIndicator("+1000",pickup.x,pickup.y));
-			    				 ((GameScene) scene).score+=1000;
-			    			  }
-			    			  contact.setEnabled(false);
-			    		  }
-			    	  }
-				}
-
-				@Override
-				public void postSolve(Contact contact, ContactImpulse impulse) {
-					// TODO Auto-generated method stub
-					
-				}
-     			
-     		});*/
 	}
 	@Override
 	public void setPosition(float x, float y){
@@ -195,29 +77,35 @@ public class ManBearPig extends GameObject {
 		//collisionRect.setY(y);
 	}
 	public void jump(){
-		if(grounded){
+		willJump=true;
+	}
+	public void performJump(){
+		//if(grounded){
 			grounded=false;
 			ySpd=-11;
 			//setPosition(getX(),getY()+2);
-			Gdx.app.log("test", "jump");
-		}
+			//Gdx.app.log("test", "jump");
+		//}
 	}
 	public void morph(){
-		Gdx.input.vibrate(40);
 		rumble.rumble(10f, .2f,scene);
+		sounds.shift.play();
 		if(animation==manimation){
 			animation=bearimation;
 			mode=MorphMode.BEAR;
+			scene.bg.texture=scene.bg.backdrops[1];
 			explode();
 			return;
 		}else if(animation==bearimation){
 			animation=pigimation;
 			mode=MorphMode.PIG;
+			scene.bg.texture=scene.bg.backdrops[2];
 			explode();
 			return;
 		}else if(animation==pigimation){
 			animation=manimation;
 			mode=MorphMode.MAN;
+			scene.bg.texture=scene.bg.backdrops[0];
 			explode();
 			return;
 		}
@@ -232,7 +120,7 @@ public class ManBearPig extends GameObject {
 		ArrayList<Rectangle[]> colRects = ((GameScene)scene).ground.colRects;
 		
 		//collisionRect.set(collisionRect.x,collisionRect.y-ySpd,collisionRect.width,collisionRect.height+ySpd);
-		for(int i=0;i<6;i++){
+		for(int i=3;i<6;i++){
 			for(int j=0;j<16;j++){
 			//for(Rectangle rect:colRects.get(i)){
 				Rectangle rect = colRects.get(i)[j];
@@ -263,7 +151,7 @@ public class ManBearPig extends GameObject {
 							}
 						}
 						//Sideways collision
-						if((int) tileRect.y+tileRect.height>(int) collisionRect.y && (int) tileRect.y<(int) collisionRect.y+collisionRect.height){
+						if((int) tileRect.y+tileRect.height>(int) collisionRect.y && (int) tileRect.y<(int) collisionRect.y+collisionRect.height && tileRect.x<collisionRect.x){
 							/*if(isAlive)
 								Gdx.app.log("test",""+(i+((GameScene)scene).ground.groundOffset)*45);*/
 							die();
@@ -315,7 +203,7 @@ public class ManBearPig extends GameObject {
 		if (rumble.time  > 0){
 			rumble.tick(delta);
 		}
-		if(bombEffect!=null){
+		/*if(bombEffect!=null){
 			bombEffect.setPosition(getX()+45+bombX, getY()+45-ySpd);
 			bombEffect.update(delta);
 			if(isAlive)
@@ -324,16 +212,34 @@ public class ManBearPig extends GameObject {
 		if(deathEffect!=null){
 			deathEffect.setPosition(getX()+45, getY());
 			deathEffect.update(delta);
+		}*/
+		if(willJump){
+			if(grounded)
+				performJump();
+			willJump=false;
+		}
+		if(grounded && isAlive && scene.groundSpeed!=0){
+			switch(mode){
+			case MAN:
+				scene.stage.addActor(new Particle("Main/partikkel1", textures, (int)getX()+45, (int)getY()-12,3+rand.nextInt(4),rand.nextInt(2), 0.2f+(rand.nextFloat()-0.5f), 0.3f,null));
+				break;
+			case BEAR:
+				scene.stage.addActor(new Particle("Main/partikkel2", textures, (int)getX()+45, (int)getY()-12,3+rand.nextInt(4),rand.nextInt(2), 0.2f+(rand.nextFloat()-0.5f), 0.3f,null));
+				break;
+			case PIG:
+				scene.stage.addActor(new Particle("Main/partikkel3", textures, (int)getX()+45, (int)getY()-12,3+rand.nextInt(4),rand.nextInt(2), 0.2f+(rand.nextFloat()-0.5f), 0.3f,null));
+				break;
+			}
 		}
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
-		if(bombEffect!=null)
+		/*if(bombEffect!=null)
 			bombEffect.draw(batch);
 		if(runEffect!=null)
 			runEffect.draw(batch);
 		if(deathEffect!=null)
-			deathEffect.draw(batch);
+			deathEffect.draw(batch);*/
 		if(isAlive){
 			if(!drawnByObstacle)
 				super.draw(batch,alpha);
@@ -341,12 +247,15 @@ public class ManBearPig extends GameObject {
 	}
 	public void die(){
 		if(isAlive){
+			rumble.rumble(15f, .3f,scene);
+			sounds.die.play();
 			Gdx.app.log("Dead", "Game over");
 			isAlive=false;
 			//explode();
-			deathEffect.reset();
+			/*deathEffect.reset();
 			deathEffect.start();
-			deathEffect.setPosition(getX()+45, getY());
+			deathEffect.setPosition(getX()+45, getY());*/
+			scene.stage.addActor(new ExplodeParticles(scene, textures, "Main/partikkelBlod", (int)getX()+40, (int)getY()+50,0,0,scene.ground));
 			Timer.schedule(new Task(){
                 @Override
                 public void run() {
@@ -359,23 +268,26 @@ public class ManBearPig extends GameObject {
 	public void explode(){
 		switch(mode){
 		case MAN:
-			bombEffect=bombEffects[0];
+			scene.stage.addActor(new ExplodeParticles(scene, textures, "Main/partikkel1", (int)getX()+30, (int)getY()+30,3,0,scene.ground));
+			//bombEffect=bombEffects[0];
 			//runEffect=runEffects[0];
 			break;
 		case BEAR:
-			bombEffect=bombEffects[1];
+			scene.stage.addActor(new ExplodeParticles(scene, textures, "Main/partikkel2", (int)getX()+30, (int)getY()+30,3,0,scene.ground));
+			//bombEffect=bombEffects[1];
 			//runEffect=runEffects[1];
 			break;
 		case PIG:
-			bombEffect=bombEffects[2];
+			scene.stage.addActor(new ExplodeParticles(scene, textures, "Main/partikkel3", (int)getX()+30, (int)getY()+30,3,0,scene.ground));
+			//bombEffect=bombEffects[2];
 			//runEffect=runEffects[2];
 			break;
 		}
 
-		bombX=0;
+		/*bombX=0;
 		bombEffect.reset();
 		bombEffect.start();
-		bombEffect.setPosition(getX()+45, getY()+45);
+		bombEffect.setPosition(getX()+45, getY()+45);*/
 		/*runEffect.reset();
 		runEffect.start();
 		runEffect.setPosition(x+90, y+10);*/

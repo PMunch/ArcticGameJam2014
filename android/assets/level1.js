@@ -189,7 +189,7 @@
 			"x": 49450,
 			"y": 415,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{
@@ -202,7 +202,7 @@
 			"x": 49704,
 			"y": 460,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{
@@ -218,7 +218,7 @@
 			"x": 49300,
 			"y": 415,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{
@@ -234,7 +234,7 @@
 			"x": 49150,
 			"y": 375,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{
@@ -250,7 +250,7 @@
 			"x": 46632,
 			"y": 504,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{
@@ -906,7 +906,7 @@
 			"x": 48364,
 			"y": 460,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{
@@ -914,7 +914,7 @@
 			"x": 47572,
 			"y": 592,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{
@@ -1026,7 +1026,7 @@
 			"x": 49012,
 			"y": 350,
 			"settings": {
-				"ParticleType": 1
+				"particleType": 1
 			}
 		},
 		{

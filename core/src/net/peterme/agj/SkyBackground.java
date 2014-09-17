@@ -3,12 +3,12 @@ package net.peterme.agj;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class SkyBackground extends GameObject {
 	private TextureRegion[] textures;
+	public TextureRegion[] backdrops;
 	//private BgImage[] bgImages;
 	private ArrayList<BgImage> bgImages;
 	private Random rand;
@@ -16,25 +16,31 @@ public class SkyBackground extends GameObject {
 	private class BgImage{
 		public int texture;
 		public float depth;
+		public float scale;
 		public float x;
 	}
 	public SkyBackground(String image,GameScene scene) {
-		super(image,scene.textures);
+		super(image,scene.textures,scene.sounds);
 		this.scene=scene;
+		backdrops = new TextureRegion[3];
+		backdrops[0]=loadImage("Intro/bakgrunn1");
+		backdrops[1]=loadImage("Intro/bakgrunn2");
+		backdrops[2]=loadImage("Background/bakgrunn3");
+		texture = backdrops[0];
 		textures=new TextureRegion[7];
-		textures[0]=loadImage("Background/fjell2");
+		textures[0]=loadImage("Background/fjell4");
 		textures[1]=loadImage("Background/fjell3");
-		textures[2]=loadImage("Background/fjell4");
+		textures[2]=loadImage("Background/fjell2");
 		textures[3]=loadImage("Background/tre1");
 		textures[4]=loadImage("Background/tre2");
 		textures[5]=loadImage("Background/tre3");
 		textures[6]=loadImage("Background/tre4");
 		bgImages = new ArrayList<BgImage>();
 		rand = new Random();
-		for(int i=0;i<4;i++){
+		for(int i=0;i<8;i++){
 			addNewBgImage();
 		}
-		for(int i=0;i<4;i++){
+		for(int i=0;i<bgImages.size();i++){
 			bgImages.get(i).x+=rand.nextInt(1280);
 		}
 	}
@@ -69,15 +75,15 @@ public class SkyBackground extends GameObject {
 			BgImage bgImage = bgImages.get(i);
 			TextureRegion tex = textures[bgImage.texture];
 			TextureRegion reg = new TextureRegion(tex);
-			batch.draw(reg, bgImage.x, 0f, 0, 0, tex.getRegionWidth(), tex.getRegionHeight(), 1f/bgImage.depth, 1f/bgImage.depth,0);
+			batch.draw(reg, bgImage.x, 45f, 0, 0, tex.getRegionWidth(), tex.getRegionHeight(), 1f/bgImage.scale, 1f/bgImage.scale,0);
 		}
 	}
 	private void addNewBgImage(){
 		BgImage bgImage = new BgImage();
-		//bgImages[i]=new BgImage();
-		bgImage.texture = rand.nextInt(4);
-		bgImage.depth = 1+rand.nextFloat()*2;
-		bgImage.x = -textures[bgImage.texture].getRegionWidth()*(1f/bgImage.depth);//+rand.nextInt(1280);
+		bgImage.texture = rand.nextInt(textures.length-1);
+		bgImage.depth = bgImage.texture;
+		bgImage.scale = 1+rand.nextFloat()*2;
+		bgImage.x = -textures[bgImage.texture].getRegionWidth()*(1f/bgImage.scale);//+rand.nextInt(1280);
 		int j=0;
 		if(bgImages.size()>0){
 			while(bgImages.get(j).depth<bgImage.depth){

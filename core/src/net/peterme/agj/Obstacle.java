@@ -1,7 +1,5 @@
 package net.peterme.agj;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
@@ -16,8 +14,10 @@ public class Obstacle extends GameObject {
 	public boolean drawPlayer;
 	public Rectangle collisionRect;
 	private GameScene scene;
+	private boolean playSound=true;
+	public TextureRegion lightPillar;
 	public Obstacle(String image,MorphMode openMode,ManBearPig player,GameScene scene) {
-		super(scene.textures);
+		super(scene.textures,scene.sounds);
 		this.openMode = openMode;
 		this.player=player;
 		this.scene=scene;
@@ -33,12 +33,32 @@ public class Obstacle extends GameObject {
 	}
 	@Override
 	public void draw(Batch batch,float alpha){
+		if(lightPillar!=null)
+			batch.draw(lightPillar,x+obstacleParts[0].getRegionWidth()-100,y);
 		if(player.mode==openMode){
 			batch.draw(obstacleParts[3], x+obstacleParts[0].getRegionWidth(), y);
 			if(drawPlayer && player.isAlive){
 				batch.draw(player.animation.getKeyFrame(player.elapsedTime),player.getX(),player.getY());
-				if(player.getX()<=x+obstacleParts[0].getRegionWidth()-40 && player.getX()>=x && player.getY()>y+90){
-					player.die();
+				if(player.getX()<=x+obstacleParts[0].getRegionWidth() && player.getX()>=x+obstacleParts[0].getRegionWidth()-90){
+					if(playSound){
+						switch(openMode){
+						case MAN:
+							sounds.barrier[0].play();
+							break;
+						case BEAR:
+							sounds.barrier[1].play();
+							break;
+						case PIG:
+							sounds.barrier[2].play();
+							break;
+						}
+						/*LightPillar pillar = new LightPillar(textures,sounds);
+						pillar.x=(int) getX();
+						pillar.y=(int) getY();
+						scene.addActor(pillar);*/
+						lightPillar = loadImage("Main/pillar");
+						playSound=false;
+					}
 				}
 			}
 			batch.draw(obstacleParts[2], x, y);
@@ -46,7 +66,7 @@ public class Obstacle extends GameObject {
 			batch.draw(obstacleParts[1], x+obstacleParts[0].getRegionWidth(), y);
 			if(drawPlayer && player.isAlive){
 				batch.draw(player.animation.getKeyFrame(player.elapsedTime),player.getX(),player.getY());
-				if(player.getX()<=x+obstacleParts[0].getRegionWidth() && player.getX()>=x){
+				if(player.getX()<=x+obstacleParts[0].getRegionWidth() && player.getX()>=x+obstacleParts[0].getRegionWidth()-90){
 					player.die();
 				}
 			}

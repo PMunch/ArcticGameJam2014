@@ -8,21 +8,20 @@ import net.peterme.agj.ManBearPig.MorphMode;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class GameScene extends Scene {
 	private ManBearPig manBearPig;
 	//private World world;
 	//private Box2DDebugRenderer debugRenderer;
 	//private Matrix4 debugMatrix;
-	private SkyBackground bg;
+	public SkyBackground bg;
 	public GameGround ground;
 	//private Obstacle obst;
 	public ArrayList<Obstacle> obstacles;
@@ -32,54 +31,30 @@ public class GameScene extends Scene {
 	public float score = 0;
 	//public float groundSpeed = 1.8f;
 	public float groundSpeed = 1.8f;
-	private int levelProgress = 0;
-	private float waitTime = -1f;
-	//private ParticleSystem partSystem;
-	//private ParticleEffectActor partSystem;
-	/*public static class Level{
-		private ArrayList<Entity> entities;
-		private ArrayList<Layer> layer;
-	}
-	public static class Entity{
-		private String type;
-		private int x;
-		private int y;
-		private Settings settings;
-	}
-	public static class Settings{
-		private int particleType;
-		private int jumpSpeed;
-	}
-	public static class Layer{
-		private String name;
-		private int width;
-		private int height;
-		private boolean linkWithCollision;
-		private int visible;
-		private String tilesetName;
-		private boolean repeat;
-		private boolean preRender;
-		private int distance;
-		private int tilesize;
-		private boolean foreground;
-		private int[][] data;
-	}*/
-	public GameScene(Level level, TextureAtlas textures) {
+	//private int levelProgress = 0;
+	//private float waitTime = -1f;
+	private Preferences prefs = Gdx.app.getPreferences("preferences");
+	public int highScore = prefs.getInteger("HIGHSCORE",0);
+	private GameTitle title;
+	private int attempts;
+	public Sounds sounds;
+	public GameScene(Level level, TextureAtlas textures, int attempts,Sounds sounds) {
 		super(textures);
+		this.attempts=attempts;
+		this.sounds = sounds;
 		//Json json = new Json();
 		//Level level = json.fromJson(Level.class, Gdx.files.internal("level1.js"));
 	    bg = new SkyBackground("Background/Scenery/bakgrunn1",this);
 		//ground = new GameGround(level.layer.get(1).data,level.layer.get(1).width,this);
 	    int levelWidth = level.getGround().width;
 	    ground = new GameGround(level.getGround().data,levelWidth,this); 
-		manBearPig = new ManBearPig("Main/mannbarschwein",this,textures);
+		manBearPig = new ManBearPig("Main/mannbarschwein",this,textures,sounds);
 		//manBearPig.x=1092;
 		//manBearPig.y=120;
 		manBearPig.setPosition(1092, 120);
 		//stage.addActor(partSystem);
 
 		addActor(bg);
-		addActor(ground);
 		obstacles=new ArrayList<Obstacle>();
 		pickups = new ArrayList<Pickup>();
 		for(Entity entity:level.entities){
@@ -97,7 +72,7 @@ public class GameScene extends Scene {
 					break;
 				}
 				if(gate!=null){
-					gate.setPosition(entity.x-(levelWidth*45-1280)+300,
+					gate.setPosition((entity.x+4*45)-(levelWidth*45-1280),
 									(int) (720-(entity.y+gate.getHeight())));
 					int i=0;
 					if(obstacles.size()!=0){
@@ -124,7 +99,7 @@ public class GameScene extends Scene {
 					break;
 				}
 				if(pickup!=null){
-					pickup.setPosition(entity.x-(levelWidth*45-1280),
+					pickup.setPosition((entity.x)-(levelWidth*45-1280),
 									(int) (720-(entity.y+pickup.getHeight())));
 					pickups.add(pickup);
 					addActor(pickup);
@@ -132,7 +107,7 @@ public class GameScene extends Scene {
 			}
 		}
 		//for(Obstacle obst:obstacles)
-		//	Gdx.app.log("Obstacles", ""+obst.x);
+		//Gdx.app.log("Obstacles", ""+obstacles.get(0).x);
 		stage.addListener(new InputListener(){
 			@Override
 			public boolean keyDown(InputEvent event, int keyCode){
@@ -167,16 +142,54 @@ public class GameScene extends Scene {
 			}
 		});*/
 		addActor(manBearPig);
-		addActor(new ScoreBoard(this));
+		addActor(new ScoreBoard(this,attempts));
+		addActor(ground);
+		if(attempts==0){
+			groundSpeed=0;
+		}else{
+			groundSpeed=1.8f;
+		}
 	}
 	@Override
 	public void render(float delta){
 		super.render(delta);
+		if(title==null && attempts==0 && delta<0.1){
+			title = new GameTitle(textures,this);
+			float switchDelay = 0.5f;
+			Runnable switchText = new Runnable(){
+				@Override
+	            public void run() {
+	                title.switchText();
+	                manBearPig.morph();
+	            }
+			};
+			title.addAction(sequence(new DelayAction(switchDelay),
+									run(switchText),
+									new DelayAction(switchDelay),
+									run(switchText),
+									new DelayAction(switchDelay),
+									run(new Runnable(){
+									@Override
+									public void run() {
+										title.dead=true;
+										groundSpeed=1.8f;
+										manBearPig.morph();
+									}
+			})));
+			addActor(title);
+		}
 		/*ShapeRenderer sr = new ShapeRenderer();
         sr.setColor(manBearPig.grounded?Color.BLACK:Color.RED);
         sr.setProjectionMatrix(camera.combined);
         sr.begin(ShapeType.Line);
-        sr.rect(manBearPig.collisionRect.x,manBearPig.collisionRect.y,manBearPig.collisionRect.width,manBearPig.collisionRect.height);
+        for(Actor actor:stage.getActors()){
+        	if(actor instanceof Particle){
+        		Particle part = (Particle) actor;
+        		sr.rect(part.collisionRect.x,part.collisionRect.y,part.collisionRect.width,part.collisionRect.height);
+        	}
+        }
+        sr.end();*/
+        /*sr.rect(manBearPig.collisionRect.x,manBearPig.collisionRect.y,manBearPig.collisionRect.width,manBearPig.collisionRect.height);
         int i=28;
         for(Rectangle[] rectL:ground.colRects){
         	for(Rectangle rect:rectL){
@@ -185,6 +198,14 @@ public class GameScene extends Scene {
         	}
         	i--;
         }
+        for(int i=3;i<6;i++){
+			for(int j=0;j<16;j++){
+			//for(Rectangle rect:colRects.get(i)){
+				Rectangle rect = ground.colRects.get(i)[j];
+				if(rect!=null)
+					sr.rect(1280-(i+ground.groundOffset)*45,rect.y,rect.width,rect.height);
+			}
+        }
         sr.end();*/
 		/*if(manBearPig.isAlive){
 		Gdx.app.log("Delta", ""+delta);
@@ -192,10 +213,8 @@ public class GameScene extends Scene {
 		//float delta = 1/(60*6);
 		//float delta = delta2;
 		//if(levelProgress!=-1){
-		if(delta<0.1f){
+		if(delta<0.1f && attempts!=0){
 			groundSpeed=1.8f;
-		}else{
-			//waitTime-=delta;
 		}
 			if(manBearPig.isAlive){
 		        //world.step( delta, 8, 3 );
@@ -210,9 +229,14 @@ public class GameScene extends Scene {
 				//ground.step(delta*groundSpeed);
 				//pickup.step();
 				//barrier.step();
-				score+=delta*10;
-				levelProgress+=delta*groundSpeed*60*6;
+				score+=delta*groundSpeed*5;
+				//levelProgress+=delta*groundSpeed*60*6;
 			}else{
+				if(score>highScore){
+					highScore=(int) score;
+					prefs.putInteger("HIGHSCORE", highScore);
+					prefs.flush();
+				}
 				groundSpeed=0;
 			}
 		/*}else{

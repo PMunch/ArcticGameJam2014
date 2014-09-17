@@ -1,25 +1,20 @@
 package net.peterme.agj;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 public class ScoreIndicator extends GameObject {
 
 	private BitmapFont font;
 	private String score;
-	private float x;
-	private float y;
-	public ScoreIndicator(String score,float x,float y,TextureAtlas textures) {
-		super(textures);
+	//private float x;
+	//private float y;
+	public ScoreIndicator(String score,float x,float y,TextureAtlas textures,Sounds sounds) {
+		super(textures,sounds);
 		font = new BitmapFont(Gdx.files.internal("font.fnt"),Gdx.files.internal("font.png"),false);
 		//font.scale(.7f);
         this.score=score;

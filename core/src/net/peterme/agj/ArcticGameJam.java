@@ -5,9 +5,7 @@ import net.peterme.agj.LevelParser.Level;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 public class ArcticGameJam extends Game {
@@ -17,6 +15,8 @@ public class ArcticGameJam extends Game {
 	private Level level;
 	//private AssetManager manager;
 	private TextureAtlas textures; 
+	private int attempts=0;
+	private Sounds sounds;
 	//private boolean loaded = false;
 	
 	@Override
@@ -43,22 +43,26 @@ public class ArcticGameJam extends Game {
 		manager.load("gate.png",Texture.class);
 		manager.load("skog.png",Texture.class);
 		manager.finishLoading();*/
+		sounds=new Sounds();
+		sounds.music.play();
+		sounds.music.setLooping(true);
 		textures = new TextureAtlas("atlas/pack.atlas");
 		restartGame = new GameEventListener(){
 			@Override
 			public boolean onRestartGame(GameEvent event){
+				attempts++;
 				toDestroy = currentScene;
-				currentScene = new GameScene(level,textures);
+				currentScene = new GameScene(level,textures,attempts,sounds);
 				currentScene.addListener(restartGame);
 				Gdx.input.setInputProcessor(currentScene.stage);
 				setScreen(currentScene);
 				return true;
 			}
 		};
-		currentScene = new GameScene(level,textures);
+		currentScene = new GameScene(level,textures,attempts,sounds);
 		currentScene.addListener(restartGame);
 		Gdx.input.setInputProcessor(currentScene.stage);
-		currentScene.addListener(new GameEventListener(){
+		/*currentScene.addListener(new GameEventListener(){
 			@Override
 			public boolean onStartGame(GameEvent event){
 				//currentScene.dispose();
@@ -68,7 +72,7 @@ public class ArcticGameJam extends Game {
 				Gdx.input.setInputProcessor(currentScene.stage);
 				return true;
 			}
-		});
+		});*/
 		setScreen(currentScene);
 	}
 

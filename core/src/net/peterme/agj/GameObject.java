@@ -1,10 +1,6 @@
 package net.peterme.agj;
 
-import net.peterme.agj.TextureHandler.HandledTexture;
-
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -14,27 +10,34 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class GameObject extends Actor {
 	public Boolean dead = false;
 	public TextureRegion texture;
-	public String textureName;
-	public TextureAtlas textureAtlas;
+	//public TextureAtlas textureAtlas;
 	public Animation animation;
 	public int x;
 	public int y;
+	public int originX = 0;
+	public int originY = 0;
+	public float rotation = 0;
+	public float scaleX = 1;
+	public float scaleY = 1;
 	public float elapsedTime;
 	public TextureAtlas textures;
+	public Sounds sounds;
 	
-	public GameObject(TextureAtlas textures){
+	public GameObject(TextureAtlas textures,Sounds sounds){
 		this.textures=textures;
+		this.sounds=sounds;
 	}
-	public GameObject(String image,TextureAtlas textures){
+	public GameObject(String image,TextureAtlas textures,Sounds sounds){
 		this.textures=textures;
-		textureName=image;
 		texture = loadImage(image);
+		this.sounds=sounds;
 	}
-	public GameObject(String atlas,String sprite,float framerate,TextureAtlas textures){
+	/*public GameObject(String atlas,String sprite,float framerate,TextureAtlas textures,Sounds sounds){
 		this.textures=textures;
+		this.sounds=sounds;
 		textureAtlas = new TextureAtlas(Gdx.files.internal(atlas));
         animation = new Animation(1f/framerate, textureAtlas.findRegions(sprite));
-	}
+	}*/
 	
 		//textureAtlas = new TextureAtlas(Gdx.files.internal("data/spritesheet.atlas"));
         //animation = new Animation(1/15f, textureAtlas.getRegions());
@@ -52,7 +55,9 @@ public class GameObject extends Actor {
 	public void draw(Batch batch, float alpha){
         //batch.draw(texture.region, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
 		if(texture != null)
-			batch.draw(texture,x,y,texture.getRegionWidth(),texture.getRegionHeight());
+			batch.draw(texture, x, y, originX, originY, texture.getRegionWidth(), texture.getRegionHeight(), scaleX, scaleY, rotation);
+			//batch.draw(texture,x,y,texture.getRegionWidth(),texture.getRegionHeight());
+			//batch.draw(texture,x,y,texture.getRegionWidth(),texture.getRegionHeight());
 		if(animation != null){
 			batch.draw(animation.getKeyFrame(elapsedTime),getX(),getY());
 			//Gdx.app.log("Animation", "ElapsedTime: "+elapsedTime);
@@ -69,8 +74,8 @@ public class GameObject extends Actor {
 				textureName=null;
 			}*/
 				//texture.dispose();
-			if(textureAtlas!=null)
-				textureAtlas.dispose();
+			//if(textureAtlas!=null)
+			//	textureAtlas.dispose();
 			clear();
 			remove();
 		}
