@@ -34,7 +34,7 @@ public class Obstacle extends GameObject {
 	@Override
 	public void draw(Batch batch,float alpha){
 		if(lightPillar!=null)
-			batch.draw(lightPillar,x+obstacleParts[0].getRegionWidth()-100,y);
+			batch.draw(lightPillar,x+obstacleParts[0].getRegionWidth()-100,openMode==MorphMode.PIG?y+45:y);
 		if(player.mode==openMode){
 			batch.draw(obstacleParts[3], x+obstacleParts[0].getRegionWidth(), y);
 			if(drawPlayer && player.isAlive){
